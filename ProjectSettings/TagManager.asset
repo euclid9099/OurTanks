@@ -11,8 +11,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Tank
+  - Obstruction
   - 
   - 
   - 
@@ -38,6 +38,15 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 1026840913
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Actors
+    uniqueID: 1326070125
+    locked: 0
+  - name: Overlay
+    uniqueID: 4276771749
     locked: 0
