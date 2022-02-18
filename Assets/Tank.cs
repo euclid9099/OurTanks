@@ -30,37 +30,43 @@ public class Tank : MonoBehaviour
             movement *= speed * Time.deltaTime;
 
             //slowly rotate to fit movement
-            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(0,0,(float)(180 * Math.Atan2(movement.y, movement.x) / Math.PI)), Time.deltaTime * 25);
+            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(0,0,(float)(180 * Math.Atan2(movement.y, movement.x) / Math.PI)), Time.deltaTime * speed * 3);
 
             //collision detection:
             //find all collidable objects within movement range
-            RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, myCollider.size, 0, movement, speed * Time.deltaTime, LayerMask.GetMask("Tank", "Obstruction"));
+            RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, myCollider.size * 0.95f, 0, movement, speed * Time.deltaTime, LayerMask.GetMask("Tank", "Obstruction"));
 
             //iterate over each hit
-            foreach (RaycastHit2D hit in hits)
+            int i = 1;
+            //abs limit is/was a safety precaution, avoiding endless loops
+            int abslimit = 10;
+            float customDistance;
+            while (abslimit > 0 && i < hits.Length)
             {
-                //first element is self, ignore
-                if(!hit.Equals(hits[0]))
+                //check x value of hits normal (tells direction of collision)
+                if (hits[i].normal.x != 0)
                 {
-                    //check x value of hits normal
-                    if (hit.normal.x != 0)
-                    {
-                        //if there is a sign mismatch (e.g. hit.normal.x = -1 and movement.x = 1), there would be a collision. Decrease speed
-                        if ((hit.normal.x < 0 && movement.x > 0) || (hit.normal.x > 0 && movement.x < 0))
-                        {
-                            movement.x *= hit.distance;
-                        }
-                    }
-                    //same for y
-                    else if (hit.normal.y != 0)
-                    {
-                        if ((hit.normal.y < 0 && movement.y > 0) || (hit.normal.y > 0 && movement.y < 0))
-                        {
-                            movement.y *= hit.distance;
-                        }
-                    }
+                    //get horizontal distance from self to whatever was hit
+                    customDistance = hits[i].point.x - transform.position.x - ((myCollider.size.x / 2) * (movement.x / Math.Abs(movement.x)));
+
+                    movement.x = customDistance;
+                    //redo collision with new horizontal distance
+                    hits = Physics2D.BoxCastAll(transform.position, myCollider.size * 0.95f, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
+                    i = 0;
                 }
+                //same for y/vertical
+                else if (hits[i].normal.y != 0)
+                {
+                    customDistance = hits[i].point.y - transform.position.y - ((myCollider.size.y / 2) * (movement.y / Math.Abs(movement.y)));
+
+                    movement.y = customDistance;
+                    hits = Physics2D.BoxCastAll(transform.position, myCollider.size * 0.95f, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
+                    i = 0;
+                }
+                i++;
+                abslimit--;
             }
+            if (abslimit == 0) Debug.Log("Limit reached");
             //translate tank by movement, after every collision has taken effect
             transform.Translate(movement, Space.World);
         }
