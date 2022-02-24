@@ -27,14 +27,14 @@ public class Tank : MonoBehaviour
         {
             //change speed to always be the same (strafing provides no benefits)
             movement.Normalize();
-            movement *= speed * Time.deltaTime;
+            movement *= speed * Time.fixedDeltaTime;
 
             //slowly rotate to fit movement
-            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(0,0,(float)(180 * Math.Atan2(movement.y, movement.x) / Math.PI)), Time.deltaTime * speed * 3);
+            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(0,0,(float)(180 * Math.Atan2(movement.y, movement.x) / Math.PI)), Time.fixedDeltaTime * speed * 3);
 
             //collision detection:
             //find all collidable objects within movement range
-            RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, myCollider.size * 0.95f, 0, movement, speed * Time.deltaTime, LayerMask.GetMask("Tank", "Obstruction"));
+            RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, myCollider.size * 0.95f, 0, movement, speed * Time.fixedDeltaTime, LayerMask.GetMask("Tank", "Obstruction"));
 
             //iterate over each hit
             int i = 1;
