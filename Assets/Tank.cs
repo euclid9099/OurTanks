@@ -30,7 +30,8 @@ public class Tank : MonoBehaviour
             movement *= speed * Time.fixedDeltaTime;
 
             //slowly rotate to fit movement
-            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(0,0,(float)(180 * Math.Atan2(movement.y, movement.x) / Math.PI)), Time.fixedDeltaTime * speed * 3);
+            Debug.Log(Quaternion.Angle(this.transform.rotation, Quaternion.Euler(0, 0, (float)(180 * Math.Atan2(movement.y, movement.x) / Math.PI))) < 90);
+            this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(0,0,(float)(180 * Math.Atan2(movement.y, movement.x) / Math.PI + (Quaternion.Angle(this.transform.rotation, Quaternion.Euler(0, 0, (float)(180 * Math.Atan2(movement.y, movement.x) / Math.PI))) < 90 ? 0 : 180))), Time.fixedDeltaTime * speed * 3);
 
             //collision detection:
             //find all collidable objects within movement range
