@@ -9,6 +9,8 @@ public class Tank : MonoBehaviour
     private float speed = 10f;
     private BoxCollider2D myCollider;
     private Vector3 movement;
+    
+    public int bombLimit = 2;
 
     // Start is called before the first frame update
     void Start()
@@ -34,7 +36,8 @@ public class Tank : MonoBehaviour
 
             //collision detection:
             //find all collidable objects within movement range
-            RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, myCollider.size * 0.95f, 0, movement, speed * Time.fixedDeltaTime, LayerMask.GetMask("Tank", "Obstruction"));
+            Vector2 effectiveCollision = myCollider.size * 0.9f;
+            RaycastHit2D[] hits = Physics2D.BoxCastAll(this.transform.position, effectiveCollision, 0, movement, speed * Time.fixedDeltaTime, LayerMask.GetMask("Tank", "Obstruction"));
 
             //iterate over each hit
             int i = 1;
@@ -69,6 +72,17 @@ public class Tank : MonoBehaviour
             if (abslimit == 0) Debug.Log("Limit reached");
             //translate tank by movement, after every collision has taken effect
             transform.Translate(movement, Space.World);
+        }
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Space) && bombLimit > 0) {
+            Bomb bomb = ((GameObject)Resources.Load("Bomb")).GetComponent<Bomb>();
+            bomb.transform.position = this.transform.position;
+            bomb = Instantiate(bomb);
+            bomb.SetParent(this);
+            bombLimit--;
         }
     }
 }
