@@ -6,16 +6,19 @@ using System;
 [RequireComponent(typeof(BoxCollider2D))]
 public class Tank : MonoBehaviour
 {
+    public int team = 0;
+
     private float speed = 10f;
     private BoxCollider2D myCollider;
     private Vector3 movement;
     
-    public int bombLimit = 2;
+    public int bombLimit;
 
     // Start is called before the first frame update
     void Start()
     {
         myCollider = GetComponent<BoxCollider2D>();
+        bombLimit = 2;
     }
 
     // Update is called once per frame
@@ -23,6 +26,7 @@ public class Tank : MonoBehaviour
     {
         //get Input for horizontal (a,d,LEFT,RIGHT) and vertical (w,s,UP,DOWN) axis
         movement = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"), 0);
+        Vector3 mv_raw = movement;
 
         //if movement is not null, move player
         if (!movement.Equals(Vector3.zero))
@@ -50,20 +54,20 @@ public class Tank : MonoBehaviour
                 if (hits[i].normal.x != 0)
                 {
                     //get horizontal distance from self to whatever was hit
-                    customDistance = hits[i].point.x - transform.position.x - ((myCollider.size.x / 2) * (movement.x / Math.Abs(movement.x)));
+                    customDistance = hits[i].point.x - transform.position.x - ((myCollider.size.x / 2) * Math.Sign(movement.x));
 
                     movement.x = customDistance;
                     //redo collision with new horizontal distance
-                    hits = Physics2D.BoxCastAll(transform.position, myCollider.size * 0.95f, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
+                    hits = Physics2D.BoxCastAll(transform.position, effectiveCollision, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
                     i = 0;
                 }
                 //same for y/vertical
                 else if (hits[i].normal.y != 0)
                 {
-                    customDistance = hits[i].point.y - transform.position.y - ((myCollider.size.y / 2) * (movement.y / Math.Abs(movement.y)));
+                    customDistance = hits[i].point.y - transform.position.y - ((myCollider.size.y / 2) * Math.Sign(movement.y));
 
                     movement.y = customDistance;
-                    hits = Physics2D.BoxCastAll(transform.position, myCollider.size * 0.95f, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
+                    hits = Physics2D.BoxCastAll(transform.position, effectiveCollision, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
                     i = 0;
                 }
                 i++;
@@ -75,7 +79,7 @@ public class Tank : MonoBehaviour
         }
     }
 
-    private void Update()
+    void Update()
     {
         if(Input.GetKeyDown(KeyCode.Space) && bombLimit > 0) {
             Bomb bomb = ((GameObject)Resources.Load("Bomb")).GetComponent<Bomb>();
@@ -83,6 +87,7 @@ public class Tank : MonoBehaviour
             bomb = Instantiate(bomb);
             bomb.SetParent(this);
             bombLimit--;
+            Debug.Log(bombLimit);
         }
     }
 }
