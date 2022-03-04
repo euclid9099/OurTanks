@@ -18,7 +18,7 @@ public class Tank : MonoBehaviour
     void Start()
     {
         myCollider = GetComponent<BoxCollider2D>();
-        bombLimit = 2;
+        bombLimit = 200;
     }
 
     // Update is called once per frame

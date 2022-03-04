@@ -1,42 +1,80 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class Bomb : MonoBehaviour
 {
-    private float explosionRadius;
-    private float detectiondistance = 2;
-    private float timer = 3;
+    private float explosionRadius = 5;
+    private float detectiondistance = 4;
+    private float timer = 5;
     private Tank parent = null;
-
-    // Start is called before the first frame update
+    private SpriteRenderer spriteRenderer;
+    private Sprite[] sprites;
+    private int spritePhase;
+    
     void Start()
     {
-        
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        sprites = Resources.LoadAll<Sprite>("BombSprites");
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        //count down bomb timer
         timer -= Time.fixedDeltaTime;
-        if (timer > 0.5 && Physics2D.CircleCastAll(this.transform.position, detectiondistance, Vector2.zero, 0, LayerMask.GetMask("Tank")).Length > 0)
+        Collider2D[] hits;
+
+        //if there are tanks within detection distance
+        if (timer > 0.5 && (hits = Physics2D.OverlapCircleAll(this.transform.position, detectiondistance, LayerMask.GetMask("Tank"))).Length > 0)
         {
-            //timer = 0.5f;
+            //loop over every tank in range
+            foreach (Collider2D hit in hits)
+            {
+                //if it's an enemy tank, reduce time to detection
+                if (hit.gameObject.GetComponent<Tank>().team != this.parent.team)
+                {
+                    timer = 0.5f;
+                    break;
+                }
+            }
         }
         if (timer < 0)
         {
-            Collider2D[] hits = Physics2D.OverlapCircleAll(this.transform.position, explosionRadius, LayerMask.GetMask("Tank"));
-            foreach(Collider2D hit in hits)
+            explode();
+        }
+    }
+
+    void Update()
+    {
+        if (timer > 1)
+        {
+            if (sprites[(int)Math.Floor(2 * timer) % sprites.Length] != spriteRenderer.sprite)
             {
-                Debug.Log("hit " + hit.gameObject);
+                spritePhase++;
+                spriteRenderer.sprite = sprites[spritePhase % sprites.Length];
             }
-            parent.bombLimit += 1;
-            Destroy(this.gameObject);
+        } else
+        {
+            spritePhase++;
+            spriteRenderer.sprite = sprites[spritePhase % sprites.Length];
         }
     }
 
     public void SetParent(Tank parent)
     {
         this.parent = parent;
+    }
+
+    private void explode()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(this.transform.position, explosionRadius, LayerMask.GetMask("Tank", "Obstruction"));
+        foreach (Collider2D hit in hits)
+        {
+            Debug.Log("hit " + hit.gameObject);
+        }
+        if (parent != null) parent.bombLimit += 1;
+        Destroy(this.gameObject);
     }
 }
