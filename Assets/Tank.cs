@@ -90,4 +90,9 @@ public class Tank : MonoBehaviour
             Debug.Log(bombLimit);
         }
     }
+
+    public void Kill()
+    {
+        Destroy(this.gameObject);
+    }
 }
