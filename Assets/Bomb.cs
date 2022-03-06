@@ -7,7 +7,7 @@ public class Bomb : MonoBehaviour
 {
     private float explosionRadius = 5;
     private float detectiondistance = 4;
-    private float timer = 5;
+    private float timer = 2;
     private Tank parent = null;
     private SpriteRenderer spriteRenderer;
     private Sprite[] sprites;
@@ -22,8 +22,6 @@ public class Bomb : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        //count down bomb timer
-        timer -= Time.fixedDeltaTime;
         Collider2D[] hits;
 
         //if there are tanks within detection distance
@@ -40,21 +38,22 @@ public class Bomb : MonoBehaviour
                 }
             }
         }
-        if (timer < 0)
-        {
-            explode();
-        }
     }
 
     void Update()
     {
+        //count down bomb timer
+        timer -= Time.deltaTime;
         if (timer > 1)
         {
-            if (sprites[(int)Math.Floor(2 * timer) % sprites.Length] != spriteRenderer.sprite)
+            if (sprites[(int)(2 * timer) % sprites.Length] != spriteRenderer.sprite)
             {
                 spritePhase++;
                 spriteRenderer.sprite = sprites[spritePhase % sprites.Length];
             }
+        } else if (timer < 0)
+        {
+            Explode();
         } else
         {
             spritePhase++;
@@ -67,13 +66,15 @@ public class Bomb : MonoBehaviour
         this.parent = parent;
     }
 
-    private void explode()
+    private void Explode()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(this.transform.position, explosionRadius, LayerMask.GetMask("Tank", "Obstruction"));
-        foreach (Collider2D hit in hits)
-        {
-            Debug.Log("hit " + hit.gameObject);
-        }
+        //load explosion effect
+        GameObject explosion = Instantiate((GameObject)Resources.Load("Explosion"), this.transform.position, this.transform.rotation);
+        var main = explosion.GetComponent<ParticleSystem>().main;
+            main.startSpeed = new ParticleSystem.MinMaxCurve(0, 2 * explosionRadius);
+        main.maxParticles = (int)(20 * explosionRadius * explosionRadius);
+
+        //kill self
         if (parent != null) parent.bombLimit += 1;
         Destroy(this.gameObject);
     }
