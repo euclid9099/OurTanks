@@ -1041,6 +1041,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   team: 0
   bombLimit: 2
+  bmbExplosionRadius: 3
+  bmbDetectionDistance: 4
+  bmbtimer: 1
 --- !u!61 &1455689826
 BoxCollider2D:
   m_ObjectHideFlags: 0
