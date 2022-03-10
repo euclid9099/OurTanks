@@ -6,9 +6,10 @@ using System;
 public class Bomb : MonoBehaviour
 {
     private float explosionRadius = 3;
-    private float detectiondistance = 2;
+    private float detectionDistance = 2;
     private float timer = 2;
     private Tank parent = null;
+
     private SpriteRenderer spriteRenderer;
     private Sprite[] sprites;
     private int spritePhase;
@@ -19,13 +20,20 @@ public class Bomb : MonoBehaviour
         sprites = Resources.LoadAll<Sprite>("BombSprites");
     }
 
+    public void Settings(float explosionRadius, float detectionDistance, float timer)
+    {
+        this.explosionRadius = explosionRadius;
+        this.detectionDistance = detectionDistance;
+        this.timer = timer;
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
         Collider2D[] hits;
 
         //if there are tanks within detection distance
-        if (timer > 0.5 && (hits = Physics2D.OverlapCircleAll(this.transform.position, detectiondistance, LayerMask.GetMask("Tank"))).Length > 0)
+        if (timer > 0.5 && (hits = Physics2D.OverlapCircleAll(this.transform.position, detectionDistance, LayerMask.GetMask("Tank"))).Length > 0)
         {
             //loop over every tank in range
             foreach (Collider2D hit in hits)
