@@ -5,8 +5,8 @@ using System;
 
 public class Bomb : MonoBehaviour
 {
-    private float explosionRadius = 5;
-    private float detectiondistance = 4;
+    private float explosionRadius = 3;
+    private float detectiondistance = 2;
     private float timer = 2;
     private Tank parent = null;
     private SpriteRenderer spriteRenderer;
@@ -68,11 +68,26 @@ public class Bomb : MonoBehaviour
 
     private void Explode()
     {
-        //load explosion effect
+        //load explosion effect - scale properly
         GameObject explosion = Instantiate((GameObject)Resources.Load("Explosion"), this.transform.position, this.transform.rotation);
-        var main = explosion.GetComponent<ParticleSystem>().main;
-            main.startSpeed = new ParticleSystem.MinMaxCurve(0, 2 * explosionRadius);
-        main.maxParticles = (int)(20 * explosionRadius * explosionRadius);
+        ParticleSystem.MainModule main = explosion.GetComponent<ParticleSystem>().main;
+        main.startSize = new ParticleSystem.MinMaxCurve(explosionRadius/4,explosionRadius/2);
+
+        ParticleSystem.EmissionModule em = explosion.GetComponent<ParticleSystem>().emission;
+        em.SetBurst(0, new ParticleSystem.Burst(0,new ParticleSystem.MinMaxCurve((int)(20 * explosionRadius * explosionRadius))));
+
+        ParticleSystem.ShapeModule sh = explosion.GetComponent<ParticleSystem>().shape;
+        sh.radius = explosionRadius;
+
+        //kill everything in radius
+        Collider2D[] hits = Physics2D.OverlapCircleAll(this.transform.position, explosionRadius, LayerMask.GetMask("Tank", "Obstruction"));
+        foreach(Collider2D hit in hits)
+        {
+            if (hit.gameObject.CompareTag("Tank"))
+            {
+                hit.gameObject.GetComponent<Tank>().Kill();
+            }
+        }
 
         //kill self
         if (parent != null) parent.bombLimit += 1;
