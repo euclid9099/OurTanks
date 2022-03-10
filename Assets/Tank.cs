@@ -12,13 +12,12 @@ public class Tank : MonoBehaviour
     private BoxCollider2D myCollider;
     private Vector3 movement;
     
-    public int bombLimit;
+    public int bombLimit = 2;
 
     // Start is called before the first frame update
     void Start()
     {
         myCollider = GetComponent<BoxCollider2D>();
-        bombLimit = 200;
     }
 
     // Update is called once per frame
@@ -93,6 +92,7 @@ public class Tank : MonoBehaviour
 
     public void Kill()
     {
+        Instantiate(Resources.Load<GameObject>("Death"), this.transform.position, Quaternion.Euler(0,0,45));
         Destroy(this.gameObject);
     }
 }
