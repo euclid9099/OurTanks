@@ -13,7 +13,7 @@ public class Tank : MonoBehaviour
     private Vector3 movement;
     
     public int bombLimit = 2;
-    public float bmbExplosionRadius = -500;
+    public float bmbExplosionRadius = 3;
     public float bmbDetectionDistance = 2;
     public float bmbtimer = 5;
 
