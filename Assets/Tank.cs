@@ -13,6 +13,9 @@ public class Tank : MonoBehaviour
     private Vector3 movement;
     
     public int bombLimit = 2;
+    public float bmbExplosionRadius = -500;
+    public float bmbDetectionDistance = 2;
+    public float bmbtimer = 5;
 
     // Start is called before the first frame update
     void Start()
@@ -81,10 +84,9 @@ public class Tank : MonoBehaviour
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Space) && bombLimit > 0) {
-            Bomb bomb = ((GameObject)Resources.Load("Bomb")).GetComponent<Bomb>();
-            bomb.transform.position = this.transform.position;
-            bomb = Instantiate(bomb);
-            bomb.SetParent(this);
+            GameObject bomb = Instantiate(Resources.Load<GameObject>("Bomb"), this.transform.position, this.transform.rotation);
+            bomb.GetComponent<Bomb>().SetParent(this);
+            bomb.GetComponent<Bomb>().Settings(bmbExplosionRadius, bmbDetectionDistance, bmbtimer);
             bombLimit--;
             Debug.Log(bombLimit);
         }
