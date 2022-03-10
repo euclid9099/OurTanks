@@ -956,7 +956,7 @@ GameObject:
   - component: {fileID: 1455689826}
   m_Layer: 6
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Tank
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1039,8 +1039,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f72d32c0081088641815f1fbbe56e965, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bombLimit: 2
   team: 0
+  bombLimit: 2
+  bmbExplosionRadius: 3
+  bmbDetectionDistance: 4
+  bmbtimer: 1
 --- !u!61 &1455689826
 BoxCollider2D:
   m_ObjectHideFlags: 0
