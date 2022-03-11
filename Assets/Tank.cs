@@ -94,7 +94,9 @@ public class Tank : MonoBehaviour
 
     public void Kill()
     {
-        Instantiate(Resources.Load<GameObject>("Death"), this.transform.position, Quaternion.Euler(0,0,45));
+        GameObject d = Resources.Load<GameObject>("Death");
+        d.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>(MapLoader.Instance.icons["death"]);
+        Instantiate(d, this.transform.position, Quaternion.Euler(0,0,45));
         Destroy(this.gameObject);
     }
 }
