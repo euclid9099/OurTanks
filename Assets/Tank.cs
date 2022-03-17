@@ -8,6 +8,7 @@ public class Tank : MonoBehaviour
 {
     public int team = 0;
 
+    private TankData data;
     private float speed = 10f;
     private BoxCollider2D myCollider;
     private Vector3 movement;
@@ -86,7 +87,6 @@ public class Tank : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space) && bombLimit > 0) {
             GameObject bomb = Instantiate(Resources.Load<GameObject>("Bomb"), this.transform.position, this.transform.rotation);
             bomb.GetComponent<Bomb>().SetParent(this);
-            bomb.GetComponent<Bomb>().Settings(bmbExplosionRadius, bmbDetectionDistance, bmbtimer);
             bombLimit--;
             Debug.Log(bombLimit);
         }
@@ -98,5 +98,10 @@ public class Tank : MonoBehaviour
         d.GetComponent<SpriteRenderer>().sprite = MapLoader.Instance.icons["death"][UnityEngine.Random.Range(0, MapLoader.Instance.icons["death"].Length - 1)];
         Instantiate(d, this.transform.position, Quaternion.Euler(0,0,0));
         Destroy(this.gameObject);
+    }
+
+    public void SetTankData(TankData data)
+    {
+        this.data = data;
     }
 }

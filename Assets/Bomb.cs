@@ -16,15 +16,18 @@ public class Bomb : MonoBehaviour
     
     void Start()
     {
+        //get list of bomb icons
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         sprites = MapLoader.Instance.icons["bomb"];
-    }
 
-    public void Settings(float explosionRadius, float detectionDistance, float timer)
-    {
-        this.explosionRadius = explosionRadius;
-        this.detectionDistance = detectionDistance;
-        this.timer = timer;
+        //set attributes from parents tankdata
+        TankData pdata = MapLoader.Instance.tanks[parent.name];
+        if (pdata.noNull())
+        {
+            this.explosionRadius = (float)pdata.bmbExplosion;
+            this.detectionDistance = (float)pdata.bmbDetection;
+            this.timer = (float)pdata.bmbTimer;
+        }
     }
 
     // Update is called once per frame
