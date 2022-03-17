@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Drawing;
 
 public class MapLoader : MonoBehaviour
 {
     private static MapLoader _instance;
 
+    public string path = ".";//Application.persistentDataPath;
     public string campaign;
-    public Dictionary<string, string> icons;
+    public Dictionary<string, Sprite[]> icons;
 
     //from this page https://simonleen.medium.com/game-manager-in-unity-part-1-1aafae6670ec, originally for gamemanager
     public static MapLoader Instance
@@ -26,9 +28,9 @@ public class MapLoader : MonoBehaviour
     void Awake()
     {
         _instance = this;
-        icons = new Dictionary<string, string>();
+        icons = new Dictionary<string, Sprite[]>();
 
-        string path = ".";//Application.persistentDataPath;
+        
         string[] parts;
 
         //load default icons - no errors are allowed
@@ -63,7 +65,18 @@ public class MapLoader : MonoBehaviour
                 {
                     //overwrite old value asignment with new assignment
                     icons.Remove(parts[0]);
-                    icons.Add(parts[0], "Campaigns/" + (allowNewKeys? "default" : campaign) + "/icons/" + parts[1].Replace("\r", ""));
+                    List<Sprite> sprites = new List<Sprite>();
+                    foreach(string filename in parts[1].Split(','))
+                    {
+                        
+
+                        Texture2D texture = new Texture2D(100, 100);
+                        texture.LoadImage(File.ReadAllBytes(path + "/Assets/Resources/Campaigns/" + (allowNewKeys ? "default" : campaign) + "/icons/" + filename.Replace("\r", "")));
+                        Debug.Log(texture.width + " x " + texture.height);
+                        Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+                        sprites.Add(sprite);
+                    }
+                    icons.Add(parts[0], sprites.ToArray());
                     Debug.Log(icons[parts[0]]);
                 }
             }

@@ -17,7 +17,7 @@ public class Bomb : MonoBehaviour
     void Start()
     {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        sprites = Resources.LoadAll<Sprite>(MapLoader.Instance.icons["bomb"]);
+        sprites = MapLoader.Instance.icons["bomb"];
     }
 
     public void Settings(float explosionRadius, float detectionDistance, float timer)

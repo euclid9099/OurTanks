@@ -1,5 +1,5 @@
 ---background
 ---block
 ---foreground
-bomb:bomb
-death:death
+bomb:bomb.png,bomb2.png
+death:death.png
