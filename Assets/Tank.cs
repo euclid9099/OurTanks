@@ -14,14 +14,15 @@ public class Tank : MonoBehaviour
     private Vector3 movement;
     
     public int bombLimit = 2;
-    public float bmbExplosionRadius = 3;
-    public float bmbDetectionDistance = 2;
-    public float bmbtimer = 5;
 
     // Start is called before the first frame update
     void Start()
     {
+        data = MapLoader.Instance.tanks[name];
         myCollider = GetComponent<BoxCollider2D>();
+        GetComponent<SpriteRenderer>().sprite = data.tankBase;
+        transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = data.tower;
+        bombLimit = (int)data.bmbLimit;
     }
 
     // Update is called once per frame

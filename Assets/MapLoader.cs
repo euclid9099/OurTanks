@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Drawing;
+using System.Linq;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 public class MapLoader : MonoBehaviour
 {
     private static MapLoader _instance;
+    private int levelid = 0;
+    private string[] levels;
+    private List<List<string>> curlevel;
 
     public string path = ".";//Application.persistentDataPath;
     public string campaign;
@@ -36,7 +40,7 @@ public class MapLoader : MonoBehaviour
         string[] parts;
 
         //load default icons - no errors are allowed
-        StreamReader def = new StreamReader(path + "/Assets/Resources/Campaigns/default/000_config.txt");
+        StreamReader def = new StreamReader(path + "\\Assets\\Resources/Campaigns/default/000_config.txt");
         parts = def.ReadToEnd().Split('#');
         loadIcons(parts[0], true);
         def.Close();
@@ -48,12 +52,83 @@ public class MapLoader : MonoBehaviour
             parts = camp.ReadToEnd().Split('#');
             loadIcons(parts[0]);
             loadTanks(parts[1]);
+            loadLevelnames();
+            loadNext();
+
             Debug.Log(tanks["p1"]);
             camp.Close();
         } catch(IOException e)
         {
             Debug.LogError(e);
         }
+    }
+
+    //loads the next level based on current level id
+    void loadNext()
+    {
+        Debug.Log(levels.Length);
+        if(levelid < levels.Length)
+        {
+            Debug.Log(levels[levelid]);
+            loadLevel(levels[levelid]);
+            levelid++;
+        }
+    }
+
+    //loads level from filename
+    void loadLevel(string filename)
+    {
+        //the current level is loaded as list of list of strings
+        curlevel = new List<List<string>>();
+        StreamReader level = new StreamReader(filename);
+        while(!level.EndOfStream)
+        {
+            //add lines while there are still some
+            curlevel.Add(new List<string>(level.ReadLine().Split(',')));
+        }
+        level.Close();
+
+        Debug.Log(curlevel.Count);
+
+        for(int y = 0; y < curlevel.Count; y++)
+        {
+            for(int x = 0; x < curlevel[y].Count; x++)
+            {
+                Debug.Log(x + ":" + y);
+                name = curlevel[y][x];
+                switch (name)
+                {
+                    //b1 specifies "normal" blocks (breakable, non-driveable, bullets bounce off)
+                    case "b1":
+                        Debug.Log("block");
+                        break;
+                    default:
+                        //if the name matches that of a tank
+                        if (tanks.ContainsKey(name))
+                        {
+                            //if the tank is a player tank
+                            if (name.StartsWith("p"))
+                            {
+                                Debug.Log("creating new tank at " + x + ", " + y);
+                                GameObject curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, y), Quaternion.Euler(0, 0, 0));
+                                curtank.name = name;
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+    //gets all files in current folder matching our filenames
+    void loadLevelnames()
+    {
+        Regex regex = new Regex(@".*\\[0-9]{3}_.*\.lvl$");
+        foreach (string filepath in Directory.GetFiles(path + "\\Assets\\Resources\\Campaigns\\" + campaign))
+        {
+            Debug.Log(filepath);
+        }
+        levels = Directory.GetFiles(path + "\\Assets\\Resources\\Campaigns\\" + campaign).Where(s => regex.IsMatch(s)).ToArray();
     }
 
     void loadTanks(string data)
