@@ -1,28 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 //class to hold all relevant information for 1 tank;
 public class TankData
 {
-    public Sprite tankBase;
-    public Sprite tower;
-    public float? speed;
+    public string tankBase;
+    public string tower;
+    public float speed = -1;
 
-    public int? bltLimit;
-    public float? bltSpeed;
-    public float? bltAccel;
-    public float? bltBounces;
-    public float? bltSize;
-
-    public int? bmbLimit;
-    public float? bmbExplosion;
-    public float? bmbDetection;
-    public float? bmbTimer;
+    public int bltLimit       = -1;
+    public float bltSpeed     = -1;
+    public float bltAccel     = -1;
+    public float bltBounces   = -1;
+    public float bltSize      = -1;
+                              
+    public int bmbLimit       = -1;
+    public float bmbExplosion = -1;
+    public float bmbDetection = -1;
+    public float bmbTimer     = -1;
 
     public TankData() { }
 
-    public TankData(Sprite tankBase, Sprite tower, float speed, int bltLimit, float bltSpeed, float bltAccel, int bltBounces, float bltSize, int bmbLimit, float bmbExplosion, float bmbDetection, float bmbTimer)
+    public TankData(string tankBase, string tower, float speed, int bltLimit, float bltSpeed, float bltAccel, int bltBounces, float bltSize, int bmbLimit, float bmbExplosion, float bmbDetection, float bmbTimer)
     {
         this.tankBase = tankBase;
         this.tower = tower;
@@ -40,11 +41,11 @@ public class TankData
         this.bmbTimer = bmbTimer;
     }
 
-    //returns true only if no attribute is null
-    public bool noNull()
+    //returns true only if no attribute is -1
+    public bool noUnset()
     {
-        return (tankBase != null && tower != null && tower != null &&
-            bltLimit != null && bltSpeed != null && bltAccel != null && bltBounces != null && bltSize != null &&
-            bmbLimit != null && bmbExplosion != null && bmbDetection != null && bmbTimer != null);
+        return (tankBase != null && tower != null &&
+            bltLimit != -1 && bltSpeed != -1 && bltAccel != -1 && bltBounces != -1 && bltSize != -1 &&
+            bmbLimit != -1 && bmbExplosion != -1 && bmbDetection != -1 && bmbTimer != -1);
     }
 }

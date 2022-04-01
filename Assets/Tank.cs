@@ -20,9 +20,13 @@ public class Tank : MonoBehaviour
     {
         data = MapLoader.Instance.tanks[name];
         myCollider = GetComponent<BoxCollider2D>();
-        GetComponent<SpriteRenderer>().sprite = data.tankBase;
-        transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = data.tower;
-        bombLimit = (int)data.bmbLimit;
+
+        GetComponent<SpriteRenderer>().sprite = MapLoader.PathnameToSprite(MapLoader.Instance.path + "/Assets/Resources/Campaigns/" + MapLoader.Instance.campaign + "/icons/" + data.tankBase);
+
+        transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = MapLoader.PathnameToSprite(MapLoader.Instance.path + "/Assets/Resources/Campaigns/" + MapLoader.Instance.campaign + "/icons/" + data.tower);
+
+        bombLimit = data.bmbLimit;
+        speed = data.speed;
     }
 
     // Update is called once per frame
@@ -89,7 +93,6 @@ public class Tank : MonoBehaviour
             GameObject bomb = Instantiate(Resources.Load<GameObject>("Bomb"), this.transform.position, this.transform.rotation);
             bomb.GetComponent<Bomb>().SetParent(this);
             bombLimit--;
-            Debug.Log(bombLimit);
         }
     }
 

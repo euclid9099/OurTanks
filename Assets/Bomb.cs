@@ -22,7 +22,7 @@ public class Bomb : MonoBehaviour
 
         //set attributes from parents tankdata
         TankData pdata = MapLoader.Instance.tanks[parent.name];
-        if (pdata.noNull())
+        if (pdata.noUnset())
         {
             this.explosionRadius = (float)pdata.bmbExplosion;
             this.detectionDistance = (float)pdata.bmbDetection;

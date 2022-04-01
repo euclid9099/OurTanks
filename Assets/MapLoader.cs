@@ -1,10 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Linq;
-using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 public class MapLoader : MonoBehaviour
 {
@@ -42,7 +41,7 @@ public class MapLoader : MonoBehaviour
         //load default icons - no errors are allowed
         StreamReader def = new StreamReader(path + "\\Assets\\Resources/Campaigns/default/000_config.txt");
         parts = def.ReadToEnd().Split('#');
-        loadIcons(parts[0], true);
+        LoadIcons(parts[0], true);
         def.Close();
 
         //try to load custom campaign settings
@@ -50,10 +49,12 @@ public class MapLoader : MonoBehaviour
         {
             StreamReader camp = new StreamReader(path + "/Assets/Resources/Campaigns/" + campaign + "/000_config.txt");
             parts = camp.ReadToEnd().Split('#');
-            loadIcons(parts[0]);
-            loadTanks(parts[1]);
-            loadLevelnames();
-            loadNext();
+            LoadIcons(parts[0]);
+            LoadTanks(parts[1]);
+            LoadLevelnames();
+            LoadNext();
+
+            /**/
 
             Debug.Log(tanks["p1"]);
             camp.Close();
@@ -64,19 +65,17 @@ public class MapLoader : MonoBehaviour
     }
 
     //loads the next level based on current level id
-    void loadNext()
+    void LoadNext()
     {
-        Debug.Log(levels.Length);
         if(levelid < levels.Length)
         {
-            Debug.Log(levels[levelid]);
-            loadLevel(levels[levelid]);
+            LoadLevel(levels[levelid]);
             levelid++;
         }
     }
 
     //loads level from filename
-    void loadLevel(string filename)
+    void LoadLevel(string filename)
     {
         //the current level is loaded as list of list of strings
         curlevel = new List<List<string>>();
@@ -87,8 +86,6 @@ public class MapLoader : MonoBehaviour
             curlevel.Add(new List<string>(level.ReadLine().Split(',')));
         }
         level.Close();
-
-        Debug.Log(curlevel.Count);
 
         for(int y = 0; y < curlevel.Count; y++)
         {
@@ -110,7 +107,7 @@ public class MapLoader : MonoBehaviour
                             if (name.StartsWith("p"))
                             {
                                 Debug.Log("creating new tank at " + x + ", " + y);
-                                GameObject curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, y), Quaternion.Euler(0, 0, 0));
+                                GameObject curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                                 curtank.name = name;
                             }
                         }
@@ -121,19 +118,18 @@ public class MapLoader : MonoBehaviour
     }
 
     //gets all files in current folder matching our filenames
-    void loadLevelnames()
+    void LoadLevelnames()
     {
         Regex regex = new Regex(@".*\\[0-9]{3}_.*\.lvl$");
-        foreach (string filepath in Directory.GetFiles(path + "\\Assets\\Resources\\Campaigns\\" + campaign))
-        {
-            Debug.Log(filepath);
-        }
         levels = Directory.GetFiles(path + "\\Assets\\Resources\\Campaigns\\" + campaign).Where(s => regex.IsMatch(s)).ToArray();
     }
 
-    void loadTanks(string data)
+    void LoadTanks(string data)
     {
+        //JsonUtility.FromJson(data,System.Type.GetType("string"));
+
         tanks = new Dictionary<string, TankData>();
+
         
         //create tankdata from file, by name
         string[] parts;
@@ -148,14 +144,12 @@ public class MapLoader : MonoBehaviour
 
                 if (tankparts.Length == 12)
                 {
+                    //path + "/Assets/Resources/Campaigns/" + campaign + "/icons/"
                     //get tank base texture
-                    Texture2D texture = new Texture2D(1, 1);
-                    texture.LoadImage(File.ReadAllBytes(path + "/Assets/Resources/Campaigns/" + campaign + "/icons/" + tankparts[0].Replace("\r", "")));
-                    tank.tankBase = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
-
+                    tank.tankBase = tankparts[0].Replace("\r", "");
+                    
                     //get tank tower texture
-                    texture.LoadImage(File.ReadAllBytes(path + "/Assets/Resources/Campaigns/" + campaign + "/icons/" + tankparts[1].Replace("\r", "")));
-                    tank.tower = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
+                    tank.tower = tankparts[1].Replace("\r", "");
 
                     //get speed
                     tank.speed = float.Parse(tankparts[2], CultureInfo.InvariantCulture);
@@ -190,15 +184,15 @@ public class MapLoader : MonoBehaviour
                     tank.bmbTimer = float.Parse(tankparts[11], CultureInfo.InvariantCulture);
                 }
 
-                if (tank.noNull())
+                if (tank.noUnset())
                 {
                     tanks.Add(parts[0], tank);
                 }
             }
-        }
+        }/**/
     }
 
-    void loadIcons(string data, bool allowNewKeys = false)
+    void LoadIcons(string data, bool allowNewKeys = false)
     {
         //for each line assign key and value in dictionary
         string[] parts;
@@ -220,9 +214,15 @@ public class MapLoader : MonoBehaviour
                         sprites.Add(sprite);
                     }
                     icons.Add(parts[0], sprites.ToArray());
-                    Debug.Log(icons[parts[0]]);
                 }
             }
         }
+    }
+
+    public static Sprite PathnameToSprite(string filename)
+    {
+        Texture2D text = new Texture2D(1, 1);
+        text.LoadImage(File.ReadAllBytes(filename));
+        return Sprite.Create(text, new Rect(0, 0, text.width, text.height), new Vector2(0.5f, 0.5f), Mathf.Min(text.height, text.width));
     }
 }
