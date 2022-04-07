@@ -122,8 +122,8 @@ public class MapLoader : MonoBehaviour
                 name = curlevel[y][x];
                 switch (name)
                 {
-                    //b1 specifies "normal" blocks (breakable, non-driveable, bullets bounce off)
-                    case "b1":
+                    //# specifies "normal" blocks (breakable, non-driveable, bullets bounce off)
+                    case "#":
                         Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                         break;
                     default:
