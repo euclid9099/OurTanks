@@ -80,16 +80,43 @@ public class MapLoader : MonoBehaviour
         //the current level is loaded as list of list of strings
         curlevel = new List<List<string>>();
         StreamReader level = new StreamReader(filename);
-        while(!level.EndOfStream)
+        while (!level.EndOfStream)
         {
             //add lines while there are still some
-            curlevel.Add(new List<string>(level.ReadLine().Split(',')));
+            curlevel.Add(new List<string>(level.ReadLine().Replace(" ", "").Split(',')));
         }
         level.Close();
 
-        for(int y = 0; y < curlevel.Count; y++)
+        //check that all lines have the same size
+        for(int i = 1; i < curlevel.Count; i++)
         {
-            for(int x = 0; x < curlevel[y].Count; x++)
+            if (curlevel[i].Count != curlevel[i-1].Count)
+            {
+                throw new InvalidDataException("row sizes don't match");
+            }
+        }
+
+        //add borders
+        float size_x = curlevel[0].Count;
+        float size_y = curlevel.Count;
+
+        Debug.Log(size_x + ", " + size_y);
+        GameObject top = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(size_x / 2 - 0.5f, 1), Quaternion.Euler(0,0,0));
+        top.transform.localScale = new Vector2(size_x, 1);
+
+        GameObject right = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(size_x, -size_y / 2 + 0.5f), Quaternion.Euler(0, 0, 0));
+        right.transform.localScale = new Vector2(1, size_y);
+
+        GameObject bottom = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(size_x / 2 - 0.5f, -size_y), Quaternion.Euler(0, 0, 0));
+        bottom.transform.localScale = new Vector2(size_x, 1);
+
+        GameObject left = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(-1, -size_y / 2 + 0.5f), Quaternion.Euler(0, 0, 0));
+        left.transform.localScale = new Vector2(1, size_y);
+
+        //place rest of level
+        for (int y = 0; y < size_y; y++)
+        {
+            for(int x = 0; x < size_x; x++)
             {
                 Debug.Log(x + ":" + y);
                 name = curlevel[y][x];
@@ -97,7 +124,7 @@ public class MapLoader : MonoBehaviour
                 {
                     //b1 specifies "normal" blocks (breakable, non-driveable, bullets bounce off)
                     case "b1":
-                        Debug.Log("block");
+                        Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                         break;
                     default:
                         //if the name matches that of a tank
