@@ -103,28 +103,45 @@ public class MapLoader : MonoBehaviour
         Debug.Log(size_x + ", " + size_y);
         GameObject top = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(size_x / 2 - 0.5f, 1), Quaternion.Euler(0,0,0));
         top.transform.localScale = new Vector2(size_x, 1);
+        top.name = "wall";
 
         GameObject right = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(size_x, -size_y / 2 + 0.5f), Quaternion.Euler(0, 0, 0));
         right.transform.localScale = new Vector2(1, size_y);
+        right.name = "wall";
 
         GameObject bottom = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(size_x / 2 - 0.5f, -size_y), Quaternion.Euler(0, 0, 0));
         bottom.transform.localScale = new Vector2(size_x, 1);
+        bottom.name = "wall";
 
         GameObject left = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(-1, -size_y / 2 + 0.5f), Quaternion.Euler(0, 0, 0));
         left.transform.localScale = new Vector2(1, size_y);
+        left.name = "wall";
 
         //place rest of level
         for (int y = 0; y < size_y; y++)
         {
             for(int x = 0; x < size_x; x++)
             {
-                Debug.Log(x + ":" + y);
                 name = curlevel[y][x];
                 switch (name)
                 {
-                    //# specifies "normal" blocks (breakable, non-driveable, bullets bounce off)
+                    //# specifies "normal" blocks (unbreakable, non-driveable, bullets bounce off)
                     case "#":
-                        Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+                        GameObject curwall = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+                        curwall.name = "wall";
+                        curwall.GetComponent<SpriteRenderer>().sprite = icons["block"][Random.Range(0, icons["block"].Length)];
+                        break;
+                    //O specifies holes (unbreakable, non-driveable, bullets unaffected)
+                    case "O":
+                        GameObject curhole = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+                        curhole.name = "hole";
+                        curhole.GetComponent<SpriteRenderer>().sprite = icons["hole"][Random.Range(0, icons["hole"].Length)];
+                        break;
+                    //# specifies breakable blocks (breakable, non-driveable, bullets bounce off)
+                    case "X":
+                        GameObject breakable = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+                        breakable.name = "weak_block";
+                        breakable.GetComponent<SpriteRenderer>().sprite = icons["weak_block"][Random.Range(0, icons["weak_block"].Length)];
                         break;
                     default:
                         //if the name matches that of a tank
@@ -235,12 +252,14 @@ public class MapLoader : MonoBehaviour
                     List<Sprite> sprites = new List<Sprite>();
                     foreach(string filename in parts[1].Split(','))
                     {
+                        Debug.Log(filename);
                         Texture2D texture = new Texture2D(100, 100);
                         texture.LoadImage(File.ReadAllBytes(path + "/Assets/Resources/Campaigns/" + (allowNewKeys ? "default" : campaign) + "/icons/" + filename.Replace("\r", "")));
                         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
                         sprites.Add(sprite);
                     }
                     icons.Add(parts[0], sprites.ToArray());
+                    Debug.Log(icons[parts[0]].Length);
                 }
             }
         }
