@@ -100,22 +100,19 @@ public class MapLoader : MonoBehaviour
         float size_x = curlevel[0].Count;
         float size_y = curlevel.Count;
 
-        Debug.Log(size_x + ", " + size_y);
-        GameObject top = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(size_x / 2 - 0.5f, 1), Quaternion.Euler(0,0,0));
-        top.transform.localScale = new Vector2(size_x, 1);
-        top.name = "wall";
-
-        GameObject right = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(size_x, -size_y / 2 + 0.5f), Quaternion.Euler(0, 0, 0));
-        right.transform.localScale = new Vector2(1, size_y);
-        right.name = "wall";
-
-        GameObject bottom = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(size_x / 2 - 0.5f, -size_y), Quaternion.Euler(0, 0, 0));
-        bottom.transform.localScale = new Vector2(size_x, 1);
-        bottom.name = "wall";
-
-        GameObject left = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(-1, -size_y / 2 + 0.5f), Quaternion.Euler(0, 0, 0));
-        left.transform.localScale = new Vector2(1, size_y);
-        left.name = "wall";
+        //place borders
+        for (int x = -1; x < size_x + 1; x++)
+        {
+            for (int y = -1; y < size_y + 1; y++)
+            {
+                if ((x == -1) || (x == size_x) || (y == -1) || (y == size_y))
+                {
+                    GameObject curwall = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+                    curwall.name = "wall";
+                    curwall.GetComponent<SpriteRenderer>().sprite = icons["block"][Random.Range(0, icons["block"].Length)];
+                }
+            }
+        }
 
         //place rest of level
         for (int y = 0; y < size_y; y++)
