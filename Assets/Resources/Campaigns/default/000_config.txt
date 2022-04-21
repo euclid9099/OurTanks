@@ -1,0 +1,8 @@
+---background
+---block
+---foreground
+bomb:bomb.png,bomb2.png
+death:death.png
+block:block_stone.png
+hole:hole1.png
+weak_block:box.png

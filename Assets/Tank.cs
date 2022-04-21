@@ -8,19 +8,25 @@ public class Tank : MonoBehaviour
 {
     public int team = 0;
 
+    private TankData data;
     private float speed = 10f;
     private BoxCollider2D myCollider;
     private Vector3 movement;
     
     public int bombLimit = 2;
-    public float bmbExplosionRadius = 3;
-    public float bmbDetectionDistance = 2;
-    public float bmbtimer = 5;
 
     // Start is called before the first frame update
     void Start()
     {
+        data = MapLoader.Instance.tanks[name];
         myCollider = GetComponent<BoxCollider2D>();
+
+        GetComponent<SpriteRenderer>().sprite = MapLoader.PathnameToSprite(MapLoader.Instance.path + "/Assets/Resources/Campaigns/" + MapLoader.Instance.campaign + "/icons/" + data.tankBase);
+
+        transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = MapLoader.PathnameToSprite(MapLoader.Instance.path + "/Assets/Resources/Campaigns/" + MapLoader.Instance.campaign + "/icons/" + data.tower);
+
+        bombLimit = data.bmbLimit;
+        speed = data.speed;
     }
 
     // Update is called once per frame
@@ -86,15 +92,20 @@ public class Tank : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space) && bombLimit > 0) {
             GameObject bomb = Instantiate(Resources.Load<GameObject>("Bomb"), this.transform.position, this.transform.rotation);
             bomb.GetComponent<Bomb>().SetParent(this);
-            bomb.GetComponent<Bomb>().Settings(bmbExplosionRadius, bmbDetectionDistance, bmbtimer);
             bombLimit--;
-            Debug.Log(bombLimit);
         }
     }
 
     public void Kill()
     {
-        Instantiate(Resources.Load<GameObject>("Death"), this.transform.position, Quaternion.Euler(0,0,45));
+        GameObject d = Resources.Load<GameObject>("Death");
+        d.GetComponent<SpriteRenderer>().sprite = MapLoader.Instance.icons["death"][UnityEngine.Random.Range(0, MapLoader.Instance.icons["death"].Length)];
+        Instantiate(d, this.transform.position, Quaternion.Euler(0,0,0));
         Destroy(this.gameObject);
+    }
+
+    public void SetTankData(TankData data)
+    {
+        this.data = data;
     }
 }
