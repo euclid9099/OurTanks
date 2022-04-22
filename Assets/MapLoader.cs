@@ -138,6 +138,7 @@ public class MapLoader : MonoBehaviour
                     case "X":
                         GameObject breakable = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                         breakable.name = "weak_block";
+                        breakable.AddComponent<Breakable>();
                         breakable.GetComponent<SpriteRenderer>().sprite = icons["weak_block"][Random.Range(0, icons["weak_block"].Length)];
                         break;
                     default:
