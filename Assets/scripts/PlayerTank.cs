@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerTank : Tank
 {
-    protected override Vector2 GetMovement()
+    protected override Vector2 GenerateMovement()
     {
         return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
     }

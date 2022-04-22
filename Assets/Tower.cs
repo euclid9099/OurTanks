@@ -9,7 +9,7 @@ public class Tower : MonoBehaviour
     void Start()
     {
         Debug.Log(this.transform.rotation.eulerAngles);
-
+        GetComponent<SpriteRenderer>().sprite = MapLoader.PathnameToSprite(MapLoader.Instance.path + "/Assets/Resources/Campaigns/" + MapLoader.Instance.campaign + "/icons/" + MapLoader.Instance.tanks[transform.parent.gameObject.name].tower);
     }
 
     // Update is called once per frame

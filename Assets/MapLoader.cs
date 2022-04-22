@@ -32,6 +32,8 @@ public class MapLoader : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log("Maploader awoken");
+
         _instance = this;
         icons = new Dictionary<string, Sprite[]>();
 
@@ -50,13 +52,15 @@ public class MapLoader : MonoBehaviour
             StreamReader camp = new StreamReader(path + "/Assets/Resources/Campaigns/" + campaign + "/000_config.txt");
             parts = camp.ReadToEnd().Split('#');
             LoadIcons(parts[0]);
+            Debug.Log("loaded icons");
             LoadTanks(parts[1]);
+            Debug.Log("loaded tanks");
             LoadLevelnames();
+            Debug.Log("loaded level names");
             LoadNext();
+            Debug.Log("loaded first level");
 
             /**/
-
-            Debug.Log(tanks["p1"]);
             camp.Close();
         } catch(IOException e)
         {
@@ -150,7 +154,6 @@ public class MapLoader : MonoBehaviour
                             {
                                 Debug.Log("creating new tank at " + x + ", " + y);
                                 GameObject curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
-                                curtank.AddComponent<PlayerTank>();
                                 curtank.name = name;
                             }
                         }
