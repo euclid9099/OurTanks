@@ -6,25 +6,25 @@ using System;
 //TO DO: implement kill tank, 
 public class Projectile : MonoBehaviour
 {
-    public int team = 0;
+    public Tank parent;
 
     private BoxCollider2D myCollider;
     private Rigidbody2D rb;
     public ParticleSystem projTrail;
-    public ParticleSystem explosionSm;
     private int bounceCounter;
     private float speed;
+    public float traveledDistance;
     
 
     // Start is called before the first frame update
     void Start()
     {
         myCollider = GetComponent<BoxCollider2D>();
-        this.transform.Translate(Vector2.right);
+        myCollider.enabled = false;
         rb = GetComponent<Rigidbody2D>();
         rb.velocity = transform.right * speed;
+        traveledDistance = 0;
         projTrail.Play();
-        explosionSm.Pause();
     }
 
     // Update is called once per frame
@@ -34,42 +34,63 @@ public class Projectile : MonoBehaviour
 
     void FixedUpdate()
     {
-        
+        traveledDistance += speed * Time.fixedDeltaTime;
+        if(traveledDistance > 1.6f)
+        {
+            myCollider.enabled = true;
+        }
     }
 
-    public void SetParameters(int bounces, float velocity, Quaternion direction)
+    public void SetParameters(int bounces, float velocity, Quaternion direction, Tank parent)
     {
         this.bounceCounter = bounces;
         this.speed = velocity;
         this.transform.rotation = direction;
+        this.parent = parent;
     }
     
     
     void OnCollisionEnter2D(Collision2D hit)
     {
-        //
-        if(hit.gameObject.name.Equals("wall")){
+        Debug.Log(hit.gameObject.name);
+        if(hit.gameObject.name.Equals("wall"))
+        {
             TurnProjectile(hit.GetContact(0).normal);
             bounceCounter = bounceCounter - 1;
         }
-        else if(hit.gameObject.name.Equals("tank")){
-            //first merge to get team
+        else if(hit.gameObject.GetComponent<Tank>() != null)
+        {
+            
+            Tank tank = hit.gameObject.GetComponent<Tank>();
+            tank.Kill();
+            DestroyProjectile(1.5f);
         }
-        else if(hit.gameObject.name.Equals("Projectile(Clone)")){
-            DestroyProjectile();
+        else if(hit.gameObject.name.Equals("Projectile(Clone)"))
+        {
+            DestroyProjectile(1);
         }
 
         if(bounceCounter == 0){
-            DestroyProjectile();
+            DestroyProjectile(1);
         }
     }
 
-    public void DestroyProjectile() 
+
+    public void DestroyProjectile(float explosionRadius) 
     {
         //Disable Projectile (=invisible), start explosion, kill proj after explosion
+        GameObject explosion = Instantiate((GameObject)Resources.Load("Explosion"), this.transform.position, this.transform.rotation);
+        ParticleSystem.MainModule main = explosion.GetComponent<ParticleSystem>().main;
+        main.startSize = new ParticleSystem.MinMaxCurve(explosionRadius/4,explosionRadius/2);
+
+        ParticleSystem.EmissionModule em = explosion.GetComponent<ParticleSystem>().emission;
+        em.SetBurst(0, new ParticleSystem.Burst(0,new ParticleSystem.MinMaxCurve((int)(20 * explosionRadius * explosionRadius))));
+
+        ParticleSystem.ShapeModule sh = explosion.GetComponent<ParticleSystem>().shape;
+        sh.radius = explosionRadius;
+        
         this.gameObject.SetActive(false);
         this.rb.velocity = this.transform.right * 0;
-        explosionSm.Play();
         Destroy(gameObject, 1.4f);
     }
 

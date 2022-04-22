@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    int projectileBounces = 2;
-    float projectileVelocity = 35f;
+    private int projectileBounces = 2;
+    private float projectileVelocity = 25f;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +31,6 @@ public class Tower : MonoBehaviour
     {
         //Loading Object and get copy of it; set parameters for the projectile
         GameObject projectile = Instantiate(Resources.Load<GameObject>("Projectile"),  this.transform.position, this.transform.rotation);
-        projectile.GetComponent<Projectile>().SetParameters(projectileBounces, projectileVelocity, this.transform.rotation);
+        projectile.GetComponent<Projectile>().SetParameters(projectileBounces, projectileVelocity, this.transform.rotation, this.GetComponentInParent<Tank>());
     }
 }
