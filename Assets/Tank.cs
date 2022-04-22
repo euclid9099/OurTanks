@@ -68,33 +68,37 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
         //iterate over each hit
         int i = 0;
         //abs limit is/was a safety precaution, avoiding endless loops
-        int abslimit = 10;
+        int abslimit = 100;
         float distance;
+        List<GameObject> done = new List<GameObject>();
         while (abslimit > 0 && i < hits.Length)
         {
-            if (!hits[i].collider.gameObject.Equals(this.gameObject))
+            if (!hits[i].collider.gameObject.Equals(this.gameObject) && !done.Contains(hits[i].collider.gameObject))
             {
+                done.Add(hits[i].collider.gameObject);
                 MovementInteraction interaction = hits[i].collider.gameObject.GetComponent<MovementInteraction>();
 
-                //check x value of hits normal (tells direction of collision)
-                if (hits[i].normal.x != 0 && interaction != null)
-                {
-                    //get horizontal distance from self to whatever was hit
-                    distance = hits[i].point.x - transform.position.x - ((myCollider.size.x / 2) * Math.Sign(movement.x));
-                    movement.x = distance + interaction.moveX(movement.x - distance);
+                if (interaction != null && Vector2.Angle(movement, hits[i].collider.gameObject.transform.position - transform.position) < 70) {
+                    //check x value of hits normal (tells direction of collision)
+                    if (hits[i].normal.x != 0 && Mathf.Abs(hits[i].point.y - this.transform.position.y) < myCollider.size.y / 2 - 1/128)
+                    {
+                        //get horizontal distance from self to whatever was hit
+                        distance = hits[i].point.x - transform.position.x - ((myCollider.size.x) / 2 * Mathf.Sign(movement.x));
+                        movement.x = distance + (Mathf.Abs(movement.x) > Mathf.Abs(distance) ? interaction.moveX(movement.x - distance) : movement.x - distance);
 
-                    //redo collision with new horizontal distance
-                    hits = Physics2D.BoxCastAll(transform.position, myCollider.size, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
-                    i = -1;
-                }
-                //same for y/vertical
-                else if (hits[i].normal.y != 0 && interaction != null)
-                {
-                    distance = hits[i].point.y - transform.position.y - ((myCollider.size.y / 2) * Math.Sign(movement.y));
-                    movement.y = distance + interaction.moveY(movement.y - distance);
+                        //redo collision with new horizontal distance
+                        hits = Physics2D.BoxCastAll(transform.position, myCollider.size, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
+                        i = -1;
+                    }
+                    //same for y/vertical
+                    else if (hits[i].normal.y != 0 && Mathf.Abs(hits[i].point.x - this.transform.position.x) < myCollider.size.x / 2 - 1 / 128)
+                    {
+                        distance = hits[i].point.y - transform.position.y - ((myCollider.size.y) / 2 * Mathf.Sign(movement.y));
+                        movement.y = distance + (Mathf.Abs(movement.y) > Mathf.Abs(distance) ? interaction.moveY(movement.y - distance) : movement.y - distance);
 
-                    hits = Physics2D.BoxCastAll(transform.position, myCollider.size, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
-                    i = -1;
+                        hits = Physics2D.BoxCastAll(transform.position, myCollider.size, 0, movement, movement.magnitude, LayerMask.GetMask("Tank", "Obstruction"));
+                        i = -1;
+                    }
                 }
             }
             i++;
@@ -131,16 +135,20 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
 
     public float moveX(float movx)
     {
-        return Math.Min(movx / 2, Move(new Vector2(movx / 2, 0)).x);
+        if (movx == 0) return 0;
+        else if (movx > 0) return Math.Min(movx / 2, Move(new Vector2(movx / 2, 0)).x);
+        else return Math.Max(movx / 2, Move(new Vector2(movx / 2, 0)).x);
     }
 
     public float moveY(float movy)
     {
-        return Math.Min(movy / 2, Move(new Vector2(0, movy / 2)).y);
+        if (movy == 0) return 0;
+        else if (movy > 0) return Math.Min(movy / 2, Move(new Vector2(0, movy / 2)).y);
+        else return Math.Max(movy / 2, Move(new Vector2(0, movy / 2)).y);
     }
 
-    public int movementCost()
+    public float movementCost()
     {
-        return 1;
+        return 0.5f;
     }
 }

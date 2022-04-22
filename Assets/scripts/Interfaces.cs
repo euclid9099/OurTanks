@@ -3,7 +3,7 @@ interface MovementInteraction
 {
     float moveX(float movx);
     float moveY(float movy);
-    int movementCost();
+    float movementCost();
 }
 
 interface BombInteraction
