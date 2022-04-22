@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 [RequireComponent(typeof(BoxCollider2D))]
-public abstract class Tank : MonoBehaviour
+public abstract class Tank : MonoBehaviour, BombInteraction
 {
     public int team = 0;
 
@@ -118,5 +118,8 @@ public abstract class Tank : MonoBehaviour
 
     protected abstract bool PlaceBomb();
 
-    
+    public void explode()
+    {
+        Kill();
+    }
 }

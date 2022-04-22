@@ -94,9 +94,10 @@ public class Bomb : MonoBehaviour
         Collider2D[] hits = Physics2D.OverlapCircleAll(this.transform.position, explosionRadius, LayerMask.GetMask("Tank", "Obstruction"));
         foreach(Collider2D hit in hits)
         {
-            if (hit.gameObject.CompareTag("Tank"))
+            BombInteraction interaction = hit.gameObject.GetComponent<BombInteraction>();
+            if (interaction != null)
             {
-                hit.gameObject.GetComponent<Tank>().Kill();
+                interaction.explode();
             }
         }
 
