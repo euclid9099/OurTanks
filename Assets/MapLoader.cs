@@ -149,6 +149,7 @@ public class MapLoader : MonoBehaviour
                             {
                                 Debug.Log("creating new tank at " + x + ", " + y);
                                 GameObject curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+                                curtank.AddComponent<PlayerTank>();
                                 curtank.name = name;
                             }
                         }

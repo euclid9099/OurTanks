@@ -105,7 +105,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7832413339639662282}
   - component: {fileID: 7832413339639662325}
-  - component: {fileID: 7832413339639662283}
   - component: {fileID: 7832413339639662280}
   m_Layer: 6
   m_Name: playertank
@@ -180,20 +179,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7832413339639662283
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7832413339639662324}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f72d32c0081088641815f1fbbe56e965, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  team: 0
-  bombLimit: 2
 --- !u!61 &7832413339639662280
 BoxCollider2D:
   m_ObjectHideFlags: 0
