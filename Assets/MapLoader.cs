@@ -11,6 +11,7 @@ public class MapLoader : MonoBehaviour
     private int levelid = 0;
     private string[] levels;
     private List<List<string>> curlevel;
+    private Dictionary<string, List<GameObject>> teams;
 
     public string path = ".";//Application.persistentDataPath;
     public string campaign;
@@ -68,9 +69,19 @@ public class MapLoader : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        if (teams.Count <= 1)
+        {
+            LoadNext();
+        }
+    }
+
     //loads the next level based on current level id
     void LoadNext()
     {
+        Debug.Log("Loading level " + levelid);
+        //this will just load the next level and increase the level id
         if(levelid < levels.Length)
         {
             LoadLevel(levels[levelid]);
@@ -81,9 +92,23 @@ public class MapLoader : MonoBehaviour
     //loads level from filename
     void LoadLevel(string filename)
     {
+        //empty level
+        foreach(GameObject o in FindObjectsOfType<GameObject>())
+        {
+            if (o.GetComponent<MapLoader>() == null && o.GetComponent<Camera>() == null)
+            {
+                Destroy(o);
+            }
+        }
+        Debug.Log("Emptied level");
+
         //the current level is loaded as list of list of strings
         curlevel = new List<List<string>>();
+        teams = new Dictionary<string, List<GameObject>>();
+        
         StreamReader level = new StreamReader(filename);
+
+        //get all lines from file
         while (!level.EndOfStream)
         {
             //add lines while there are still some
@@ -101,6 +126,7 @@ public class MapLoader : MonoBehaviour
         }
 
         //add borders
+        //get level sizes
         float size_x = curlevel[0].Count;
         float size_y = curlevel.Count;
 
@@ -151,15 +177,41 @@ public class MapLoader : MonoBehaviour
                         break;
                     default:
                         //if the name matches that of a tank
-                        if (tanks.ContainsKey(name))
+                        if (tanks.ContainsKey(name.Split('-')[0]))
                         {
+                            GameObject curtank;
+                            string team;
+
                             //if the tank is a player tank
                             if (name.StartsWith("p"))
                             {
                                 Debug.Log("creating new tank at " + x + ", " + y);
-                                GameObject curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
-                                curtank.name = name;
+                                curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+                                curtank.name = name.Split('-')[0];
+                            } else
+                            {
+                                curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+                                curtank.name = name.Split('-')[0];
                             }
+
+                            try
+                            {
+                                team = name.Split('-')[1];
+                            } catch (System.IndexOutOfRangeException)
+                            {
+                                team = teams.Count.ToString();
+                            }
+
+                            curtank.GetComponent<Tank>().team = team;
+
+                            if (!teams.ContainsKey(team))
+                            {
+                                teams.Add(team, new List<GameObject>());
+                            }
+
+                            teams[team].Add(curtank);
+
+                            Debug.Log(curtank.GetComponent<Tank>().team);
                         }
                         break;
                 }
@@ -262,6 +314,17 @@ public class MapLoader : MonoBehaviour
                     Debug.Log(icons[parts[0]].Length);
                 }
             }
+        }
+    }
+
+    public void TankDeath(GameObject tank)
+    {
+        teams[tank.GetComponent<Tank>().team].Remove(tank);
+        Debug.Log("Removed tank from team");
+        if (teams[tank.GetComponent<Tank>().team].Count <= 0)
+        {
+            Debug.Log("Team " + tank.GetComponent<Tank>().team + " is now empty and will be deleted");
+            teams.Remove(tank.GetComponent<Tank>().team);
         }
     }
 

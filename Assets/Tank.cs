@@ -5,7 +5,7 @@ using System;
 
 public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
 {
-    public int team = 0;
+    public string team;
 
     public TankData data;
     private float speed = 10f;
@@ -78,9 +78,9 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
                 done.Add(hits[i].collider.gameObject);
                 MovementInteraction interaction = hits[i].collider.gameObject.GetComponent<MovementInteraction>();
 
-                if (interaction != null && Vector2.Angle(movement, hits[i].collider.gameObject.transform.position - transform.position) < 70) {
+                if (interaction != null && Vector2.Angle(movement, hits[i].collider.gameObject.transform.position - transform.position) < 80) {
                     //check x value of hits normal (tells direction of collision)
-                    if (hits[i].normal.x != 0 && Mathf.Abs(hits[i].point.y - this.transform.position.y) < myCollider.size.y / 2 - 1/128)
+                    if (hits[i].normal.x != 0 && Mathf.Abs(hits[i].point.y - this.transform.position.y) - myCollider.size.y / 2 < 0)
                     {
                         //get horizontal distance from self to whatever was hit
                         distance = hits[i].point.x - transform.position.x - ((myCollider.size.x) / 2 * Mathf.Sign(movement.x));
@@ -91,7 +91,7 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
                         i = -1;
                     }
                     //same for y/vertical
-                    else if (hits[i].normal.y != 0 && Mathf.Abs(hits[i].point.x - this.transform.position.x) < myCollider.size.x / 2 - 1 / 128)
+                    else if (hits[i].normal.y != 0 && Mathf.Abs(hits[i].point.x - this.transform.position.x) - myCollider.size.x / 2 < 0)
                     {
                         distance = hits[i].point.y - transform.position.y - ((myCollider.size.y) / 2 * Mathf.Sign(movement.y));
                         movement.y = distance + (Mathf.Abs(movement.y) > Mathf.Abs(distance) ? interaction.moveY(movement.y - distance) : movement.y - distance);
@@ -116,6 +116,9 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
         GameObject d = Resources.Load<GameObject>("Death");
         d.GetComponent<SpriteRenderer>().sprite = MapLoader.Instance.icons["death"][UnityEngine.Random.Range(0, MapLoader.Instance.icons["death"].Length)];
         Instantiate(d, this.transform.position, Quaternion.Euler(0,0,0));
+
+        MapLoader.Instance.TankDeath(this.gameObject);
+
         Destroy(this.gameObject);
     }
 
