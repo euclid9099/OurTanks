@@ -36,7 +36,7 @@ public class Bomb : MonoBehaviour
         Collider2D[] hits;
 
         //if there are tanks within detection distance
-        if (timer > 0.5 && (hits = Physics2D.OverlapCircleAll(this.transform.position, detectionDistance, LayerMask.GetMask("Tank"))).Length > 0)
+        if (timer > 1 && (hits = Physics2D.OverlapCircleAll(this.transform.position, detectionDistance, LayerMask.GetMask("Tank"))).Length > 0)
         {
             //loop over every tank in range
             foreach (Collider2D hit in hits)
@@ -44,7 +44,7 @@ public class Bomb : MonoBehaviour
                 //if it's an enemy tank, reduce time to detection
                 if (hit.gameObject.GetComponent<Tank>().team != this.parent.team)
                 {
-                    timer = 0.5f;
+                    timer = 1f;
                     break;
                 }
             }
