@@ -8,9 +8,9 @@ public class Tank : MonoBehaviour
 {
     public int team = 0;
 
-    private TankData data;
+    public TankData data;
     private float speed = 10f;
-    private BoxCollider2D myCollider;
+    public BoxCollider2D myCollider;
     private Vector3 movement;
     
     public int bombLimit = 2;
