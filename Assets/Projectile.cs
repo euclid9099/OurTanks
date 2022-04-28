@@ -20,7 +20,7 @@ public class Projectile : MonoBehaviour
     void Start()
     {
         myCollider = GetComponent<BoxCollider2D>();
-        myCollider.enabled = false;
+        Physics2D.IgnoreCollision(this.myCollider, parent.myCollider, true);
         rb = GetComponent<Rigidbody2D>();
         rb.velocity = transform.right * speed;
         traveledDistance = 0;
@@ -35,9 +35,9 @@ public class Projectile : MonoBehaviour
     void FixedUpdate()
     {
         traveledDistance += speed * Time.fixedDeltaTime;
-        if(traveledDistance > 1.6f)
+        if(bounceCounter < parent.projectileBounces)
         {
-            myCollider.enabled = true;
+            Physics2D.IgnoreCollision(this.myCollider, parent.myCollider, false);
         }
     }
 
@@ -60,7 +60,6 @@ public class Projectile : MonoBehaviour
         }
         else if(hit.gameObject.GetComponent<Tank>() != null)
         {
-            
             Tank tank = hit.gameObject.GetComponent<Tank>();
             tank.Kill();
             DestroyProjectile(1.5f);
@@ -75,6 +74,29 @@ public class Projectile : MonoBehaviour
         }
     }
 
+    //howTarget returns if the Projectile points towards the target or away from it
+    public void SpawnProtectionBridge()
+    {
+        RaycastHit2D[] obstacles = Physics2D.RaycastAll(this.transform.position, this.transform.right, 1.7f);
+
+        for (int i = 0; i < obstacles.Length; i++)
+        {
+            String name = obstacles[i].collider.gameObject.name;
+            if(name.Equals("Player"))
+            {
+                if(obstacles[i].collider.gameObject.GetComponent<Tank>().Equals(parent)){
+                    obstacles[i].collider.gameObject.GetComponent<Tank>().Kill();
+                    DestroyProjectile(1.5f);
+                    break;
+                }
+            }else if(name.Equals("wall"))
+            {
+                parent.Kill();
+                DestroyProjectile(1.5f);
+                break;
+            }
+        }
+    }
 
     public void DestroyProjectile(float explosionRadius) 
     {
@@ -100,15 +122,22 @@ public class Projectile : MonoBehaviour
         Vector2 projDir = Vector2.Reflect(this.transform.right, mirrorAxis);
 
         //calculate the angle of the new Direction Vector
-        float dirAngle = (180 * Mathf.Atan2(projDir.y, projDir.x) / Mathf.PI);
+        float dirAngle = CalculateAngleFromVector2(projDir);
+
+        //Set the angle of the new Direction and restore speed
+        this.transform.rotation = Quaternion.Euler(0,0, dirAngle);
+        this.rb.velocity = this.transform.right * speed;
+    }
+
+    private float CalculateAngleFromVector2(Vector2 direction)
+    {
+        float dirAngle = (180 * Mathf.Atan2(direction.y, direction.x) / Mathf.PI);
 
         if (dirAngle < 0)
         {
             dirAngle = 360 + dirAngle;
         }
 
-        //Set the angle of the new Direction and restore speed
-        this.transform.rotation = Quaternion.Euler(0,0, dirAngle);
-        this.rb.velocity = this.transform.right * speed;
+        return dirAngle;
     }
 }

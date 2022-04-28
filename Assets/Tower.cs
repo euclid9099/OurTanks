@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    private int projectileBounces = 2;
-    private float projectileVelocity = 25f;
-
+    Tank parent;
     // Start is called before the first frame update
     void Start()
     {
+        parent = this.GetComponentInParent<Tank>();
     }
 
     // Update is called once per frame
@@ -31,6 +30,6 @@ public class Tower : MonoBehaviour
     {
         //Loading Object and get copy of it; set parameters for the projectile
         GameObject projectile = Instantiate(Resources.Load<GameObject>("Projectile"),  this.transform.position, this.transform.rotation);
-        projectile.GetComponent<Projectile>().SetParameters(projectileBounces, projectileVelocity, this.transform.rotation, this.GetComponentInParent<Tank>());
+        projectile.GetComponent<Projectile>().SetParameters(parent.projectileBounces, parent.projectileVelocity, this.transform.rotation, parent);
     }
 }

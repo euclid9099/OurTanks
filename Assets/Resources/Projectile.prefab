@@ -4817,7 +4817,7 @@ GameObject:
   - component: {fileID: 977368555484666849}
   - component: {fileID: 7479718589669133083}
   - component: {fileID: 1945223373610516791}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4902,8 +4902,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cfaaa77df8822d4ba4f8d2686c7a523, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  team: 0
+  parent: {fileID: 0}
   projTrail: {fileID: 2854504605902698129}
+  traveledDistance: 0
 --- !u!61 &7479718589669133083
 BoxCollider2D:
   m_ObjectHideFlags: 0
