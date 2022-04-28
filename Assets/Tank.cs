@@ -9,13 +9,16 @@ public class Tank : MonoBehaviour
     public int team = 0;
 
     private float speed = 10f;
-    private BoxCollider2D myCollider;
+    public BoxCollider2D myCollider;
     private Vector3 movement;
     
     public int bombLimit = 2;
     public float bmbExplosionRadius = 3;
     public float bmbDetectionDistance = 2;
     public float bmbtimer = 5;
+
+    public int projectileBounces = 2;
+    public float projectileVelocity = 25f;
 
     // Start is called before the first frame update
     void Start()
