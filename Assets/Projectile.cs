@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+using System; 
 
-//TO DO: implement kill tank, 
+//To Do: implement kill Bomb, Tank, Proj with interfaces
 public class Projectile : MonoBehaviour
 {
     public Tank parent;
@@ -35,7 +35,7 @@ public class Projectile : MonoBehaviour
     void FixedUpdate()
     {
         traveledDistance += speed * Time.fixedDeltaTime;
-        if(bounceCounter < parent.projectileBounces)
+        if(bounceCounter < parent.data.projBounces)
         {
             Physics2D.IgnoreCollision(this.myCollider, parent.myCollider, false);
         }
@@ -52,7 +52,7 @@ public class Projectile : MonoBehaviour
     
     void OnCollisionEnter2D(Collision2D hit)
     {
-        Debug.Log(hit.gameObject.name);
+        Debug.Log(hit.gameObject.name + " - " + bounceCounter);
         if(hit.gameObject.name.Equals("wall"))
         {
             TurnProjectile(hit.GetContact(0).normal);
@@ -68,33 +68,9 @@ public class Projectile : MonoBehaviour
         {
             DestroyProjectile(1);
         }
-
+        
         if(bounceCounter == 0){
             DestroyProjectile(1);
-        }
-    }
-
-    //howTarget returns if the Projectile points towards the target or away from it
-    public void SpawnProtectionBridge()
-    {
-        RaycastHit2D[] obstacles = Physics2D.RaycastAll(this.transform.position, this.transform.right, 1.7f);
-
-        for (int i = 0; i < obstacles.Length; i++)
-        {
-            String name = obstacles[i].collider.gameObject.name;
-            if(name.Equals("Player"))
-            {
-                if(obstacles[i].collider.gameObject.GetComponent<Tank>().Equals(parent)){
-                    obstacles[i].collider.gameObject.GetComponent<Tank>().Kill();
-                    DestroyProjectile(1.5f);
-                    break;
-                }
-            }else if(name.Equals("wall"))
-            {
-                parent.Kill();
-                DestroyProjectile(1.5f);
-                break;
-            }
         }
     }
 
@@ -113,7 +89,7 @@ public class Projectile : MonoBehaviour
         
         this.gameObject.SetActive(false);
         this.rb.velocity = this.transform.right * 0;
-        Destroy(gameObject, 1.4f);
+        Destroy(gameObject, 0.5f);
     }
 
     public void TurnProjectile (Vector2 mirrorAxis)

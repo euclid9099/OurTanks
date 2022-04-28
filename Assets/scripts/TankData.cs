@@ -10,11 +10,9 @@ public class TankData
     public string tower;
     public float speed = -1;
 
-    public int bltLimit       = -1;
-    public float bltSpeed     = -1;
-    public float bltAccel     = -1;
-    public float bltBounces   = -1;
-    public float bltSize      = -1;
+    public int projLimit       = -1;
+    public float projSpeed     = -1;
+    public int projBounces   = -1;
                               
     public int bmbLimit       = -1;
     public float bmbExplosion = -1;
@@ -23,17 +21,15 @@ public class TankData
 
     public TankData() { }
 
-    public TankData(string tankBase, string tower, float speed, int bltLimit, float bltSpeed, float bltAccel, int bltBounces, float bltSize, int bmbLimit, float bmbExplosion, float bmbDetection, float bmbTimer)
+    public TankData(string tankBase, string tower, float speed, int projLimit, float projSpeed, int projBounces, int bmbLimit, float bmbExplosion, float bmbDetection, float bmbTimer)
     {
         this.tankBase = tankBase;
         this.tower = tower;
         this.speed = speed;
 
-        this.bltLimit = bltLimit;
-        this.bltSpeed = bltSpeed;
-        this.bltAccel = bltAccel;
-        this.bltBounces = bltBounces;
-        this.bltSize = bltSpeed;
+        this.projLimit = projLimit;
+        this.projSpeed = projSpeed;
+        this.projBounces = projBounces;
 
         this.bmbLimit = bmbLimit;
         this.bmbExplosion = bmbExplosion;
@@ -45,7 +41,7 @@ public class TankData
     public bool noUnset()
     {
         return (tankBase != null && tower != null &&
-            bltLimit != -1 && bltSpeed != -1 && bltAccel != -1 && bltBounces != -1 && bltSize != -1 &&
+            projLimit != -1 && projSpeed != -1 && projBounces != -1 &&
             bmbLimit != -1 && bmbExplosion != -1 && bmbDetection != -1 && bmbTimer != -1);
     }
 }

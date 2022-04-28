@@ -183,7 +183,7 @@ public class MapLoader : MonoBehaviour
                 string[] tankparts = parts[1].Split(',');
                 TankData tank = new TankData();
 
-                if (tankparts.Length == 12)
+                if (tankparts.Length == 10)
                 {
                     //path + "/Assets/Resources/Campaigns/" + campaign + "/icons/"
                     //get tank base texture
@@ -197,32 +197,26 @@ public class MapLoader : MonoBehaviour
 
                     //bullets:
                     //get bullet limit
-                    tank.bltLimit = int.Parse(tankparts[3], CultureInfo.InvariantCulture);
+                    tank.projLimit = int.Parse(tankparts[3], CultureInfo.InvariantCulture);
 
                     //get bullet rebounds
-                    tank.bltBounces = int.Parse(tankparts[4], CultureInfo.InvariantCulture);
+                    tank.projBounces = int.Parse(tankparts[4], CultureInfo.InvariantCulture);
 
                     //get bullet speed
-                    tank.bltSpeed = float.Parse(tankparts[5], CultureInfo.InvariantCulture);
-
-                    //get bullet acceleration
-                    tank.bltAccel = float.Parse(tankparts[6], CultureInfo.InvariantCulture);
-
-                    //get bullet size
-                    tank.bltSize = float.Parse(tankparts[7], CultureInfo.InvariantCulture);
+                    tank.projSpeed = float.Parse(tankparts[5], CultureInfo.InvariantCulture);
 
                     //bombs:
                     //get bomb limit
-                    tank.bmbLimit = int.Parse(tankparts[8], CultureInfo.InvariantCulture);
+                    tank.bmbLimit = int.Parse(tankparts[6], CultureInfo.InvariantCulture);
 
                     //get bomb explosionradius
-                    tank.bmbExplosion = float.Parse(tankparts[9], CultureInfo.InvariantCulture);
+                    tank.bmbExplosion = float.Parse(tankparts[7], CultureInfo.InvariantCulture);
 
                     //get bomb detectionradius
-                    tank.bmbDetection = float.Parse(tankparts[10], CultureInfo.InvariantCulture);
+                    tank.bmbDetection = float.Parse(tankparts[8], CultureInfo.InvariantCulture);
 
                     //get bomb timer
-                    tank.bmbTimer = float.Parse(tankparts[11], CultureInfo.InvariantCulture);
+                    tank.bmbTimer = float.Parse(tankparts[9], CultureInfo.InvariantCulture);
                 }
 
                 if (tank.noUnset())

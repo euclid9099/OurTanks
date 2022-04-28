@@ -30,6 +30,7 @@ public class Tower : MonoBehaviour
     {
         //Loading Object and get copy of it; set parameters for the projectile
         GameObject projectile = Instantiate(Resources.Load<GameObject>("Projectile"),  this.transform.position, this.transform.rotation);
-        projectile.GetComponent<Projectile>().SetParameters(parent.projectileBounces, parent.projectileVelocity, this.transform.rotation, parent);
+        Debug.Log(parent.data.projBounces);
+        projectile.GetComponent<Projectile>().SetParameters(parent.data.projBounces, parent.data.projSpeed, this.transform.rotation, parent);
     }
 }
