@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    float rotationSpeed = 4;
+    Tank parent;
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(this.transform.rotation.eulerAngles);
+        parent = this.GetComponentInParent<Tank>();
         GetComponent<SpriteRenderer>().sprite = MapLoader.PathnameToSprite(MapLoader.Instance.path + "/Assets/Resources/Campaigns/" + MapLoader.Instance.campaign + "/icons/" + MapLoader.Instance.tanks[transform.parent.gameObject.name].tower);
     }
 
@@ -17,8 +17,21 @@ public class Tower : MonoBehaviour
     {
         //get Mousecursor (in px) and convert it in vector of game units
         Vector3 cursor = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        cursor.z = 0;
+
         //rotate the tower towards the cursor        
         this.transform.rotation = Quaternion.Euler(0,0, (float)(180 * Mathf.Atan2(cursor.y - transform.position.y, cursor.x - transform.position.x) / Mathf.PI));
+        if(Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            ShootProjectile();
+        }
+        
+    }
+
+    void ShootProjectile()
+    {
+        //Loading Object and get copy of it; set parameters for the projectile
+        GameObject projectile = Instantiate(Resources.Load<GameObject>("Projectile"),  this.transform.position, this.transform.rotation);
+        Debug.Log(parent.data.projBounces);
+        projectile.GetComponent<Projectile>().SetParameters(parent.data.projBounces, parent.data.projSpeed, this.transform.rotation, parent);
     }
 }

@@ -7,9 +7,9 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
 {
     public int team = 0;
 
-    private TankData data;
+    public TankData data;
     private float speed = 10f;
-    private BoxCollider2D myCollider;
+    public BoxCollider2D myCollider;
     private Vector2 movement;
     
     public int bombLimit = 2;
