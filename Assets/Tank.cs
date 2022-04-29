@@ -126,7 +126,11 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
 
     protected abstract Vector2 GenerateMovement();
 
+    public abstract Vector3 GetTarget();
+
     protected abstract bool PlaceBomb();
+
+    public abstract bool Shoot();
 
     public void explode()
     {

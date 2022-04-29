@@ -16,11 +16,11 @@ public class Tower : MonoBehaviour
     void Update()
     {
         //get Mousecursor (in px) and convert it in vector of game units
-        Vector3 cursor = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 cursor = parent.GetTarget();
 
         //rotate the tower towards the cursor        
         this.transform.rotation = Quaternion.Euler(0,0, (float)(180 * Mathf.Atan2(cursor.y - transform.position.y, cursor.x - transform.position.x) / Mathf.PI));
-        if(Input.GetKeyDown(KeyCode.Mouse0))
+        if(parent.Shoot())
         {
             ShootProjectile();
         }
