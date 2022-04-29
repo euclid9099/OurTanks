@@ -18,3 +18,5 @@ Campaigns can be themed by specifying new image sources for objects in a configu
 Depending on how fast we progress, we would like to add the following:
 - [ ] Level/Campaign Editor (players can create, share and play their own levels).
 - [ ] More game modes (like capture the flag, zone defence, ...)
+
+![UML Diagram as of 29th April 2022](./UML_20220429.png)
