@@ -32,6 +32,8 @@ public class MapLoader : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log("Maploader awoken");
+
         _instance = this;
         icons = new Dictionary<string, Sprite[]>();
 
@@ -50,13 +52,15 @@ public class MapLoader : MonoBehaviour
             StreamReader camp = new StreamReader(path + "/Assets/Resources/Campaigns/" + campaign + "/000_config.txt");
             parts = camp.ReadToEnd().Split('#');
             LoadIcons(parts[0]);
+            Debug.Log("loaded icons");
             LoadTanks(parts[1]);
+            Debug.Log("loaded tanks");
             LoadLevelnames();
+            Debug.Log("loaded level names");
             LoadNext();
+            Debug.Log("loaded first level");
 
             /**/
-
-            Debug.Log(tanks["p1"]);
             camp.Close();
         } catch(IOException e)
         {
@@ -109,6 +113,7 @@ public class MapLoader : MonoBehaviour
                 {
                     GameObject curwall = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                     curwall.name = "wall";
+                    curwall.AddComponent<Solid>();
                     curwall.GetComponent<SpriteRenderer>().sprite = icons["block"][Random.Range(0, icons["block"].Length)];
                 }
             }
@@ -126,18 +131,22 @@ public class MapLoader : MonoBehaviour
                     case "#":
                         GameObject curwall = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                         curwall.name = "wall";
+                        curwall.AddComponent<Solid>();
                         curwall.GetComponent<SpriteRenderer>().sprite = icons["block"][Random.Range(0, icons["block"].Length)];
                         break;
                     //O specifies holes (unbreakable, non-driveable, bullets unaffected)
                     case "O":
                         GameObject curhole = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                         curhole.name = "hole";
+                        curhole.AddComponent<Solid>();
                         curhole.GetComponent<SpriteRenderer>().sprite = icons["hole"][Random.Range(0, icons["hole"].Length)];
                         break;
                     //# specifies breakable blocks (breakable, non-driveable, bullets bounce off)
                     case "X":
                         GameObject breakable = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                         breakable.name = "weak_block";
+                        breakable.AddComponent<Breakable>();
+                        breakable.AddComponent<Solid>();
                         breakable.GetComponent<SpriteRenderer>().sprite = icons["weak_block"][Random.Range(0, icons["weak_block"].Length)];
                         break;
                     default:
