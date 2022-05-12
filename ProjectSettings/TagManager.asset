@@ -4,7 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Tank
+  - persistent
   layers:
   - Default
   - TransparentFX
