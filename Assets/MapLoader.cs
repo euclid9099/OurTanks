@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using UnityEngine.UI;
 
 public class MapLoader : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class MapLoader : MonoBehaviour
 
     public string path = ".";//Application.persistentDataPath;
     public string campaign;
+    public Canvas canvas;
     public Dictionary<string, Sprite[]> icons;
     public Dictionary<string, TankData> tanks;
 
@@ -80,10 +82,14 @@ public class MapLoader : MonoBehaviour
     //loads the next level based on current level id
     void LoadNext()
     {
-        Debug.Log("Loading level " + levelid);
         //this will just load the next level and increase the level id
         if(levelid < levels.Length)
         {
+            string name = levels[levelid].Split('\\')[5];
+            name = name.Substring(4, name.Length-8).Replace('_', ' ');
+            Debug.Log(name);
+            canvas.GetComponent<Canvas>().enabled = true;
+            canvas.GetComponentInChildren<Text>().text = name;
             LoadLevel(levels[levelid]);
             levelid++;
         }
@@ -95,12 +101,11 @@ public class MapLoader : MonoBehaviour
         //empty level
         foreach(GameObject o in FindObjectsOfType<GameObject>())
         {
-            if (o.GetComponent<MapLoader>() == null && o.GetComponent<Camera>() == null)
+            if (!o.tag.Equals("persistent") && !o.tag.Equals("MainCamera"))
             {
                 Destroy(o);
             }
         }
-        Debug.Log("Emptied level");
 
         //the current level is loaded as list of list of strings
         curlevel = new List<List<string>>();
@@ -185,7 +190,6 @@ public class MapLoader : MonoBehaviour
                             //if the tank is a player tank
                             if (name.StartsWith("p"))
                             {
-                                Debug.Log("creating new tank at " + x + ", " + y);
                                 curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                                 curtank.name = name.Split('-')[0];
                             } else
@@ -210,8 +214,6 @@ public class MapLoader : MonoBehaviour
                             }
 
                             teams[team].Add(curtank);
-
-                            Debug.Log(curtank.GetComponent<Tank>().team);
                         }
                         break;
                 }
@@ -310,14 +312,12 @@ public class MapLoader : MonoBehaviour
                     List<Sprite> sprites = new List<Sprite>();
                     foreach(string filename in parts[1].Split(','))
                     {
-                        Debug.Log(filename);
                         Texture2D texture = new Texture2D(100, 100);
                         texture.LoadImage(File.ReadAllBytes(path + "/Assets/Resources/Campaigns/" + (allowNewKeys ? "default" : campaign) + "/icons/" + filename.Replace("\r", "")));
                         Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100);
                         sprites.Add(sprite);
                     }
                     icons.Add(parts[0], sprites.ToArray());
-                    Debug.Log(icons[parts[0]].Length);
                 }
             }
         }
@@ -326,10 +326,8 @@ public class MapLoader : MonoBehaviour
     public void TankDeath(GameObject tank)
     {
         teams[tank.GetComponent<Tank>().team].Remove(tank);
-        Debug.Log("Removed tank from team");
         if (teams[tank.GetComponent<Tank>().team].Count <= 0)
         {
-            Debug.Log("Team " + tank.GetComponent<Tank>().team + " is now empty and will be deleted");
             teams.Remove(tank.GetComponent<Tank>().team);
         }
     }
