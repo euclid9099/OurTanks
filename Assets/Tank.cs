@@ -17,7 +17,7 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
     // Start is called before the first frame update
     void Start()
     {
-        data = MapLoader.Instance.tanks[name];
+        data = GameManager.Instance.tanks[name];
         myCollider = GetComponent<BoxCollider2D>();
 
         bombLimit = data.bmbLimit;
@@ -114,10 +114,10 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
     public void Kill()
     {
         GameObject d = Resources.Load<GameObject>("Death");
-        d.GetComponent<SpriteRenderer>().sprite = MapLoader.Instance.icons["death"][UnityEngine.Random.Range(0, MapLoader.Instance.icons["death"].Length)];
+        d.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.icons["death"][UnityEngine.Random.Range(0, GameManager.Instance.icons["death"].Length)];
         Instantiate(d, this.transform.position, Quaternion.Euler(0,0,0));
 
-        MapLoader.Instance.TankDeath(this.gameObject);
+        GameManager.Instance.TankDeath(this.gameObject);
 
         Destroy(this.gameObject);
     }

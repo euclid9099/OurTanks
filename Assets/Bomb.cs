@@ -18,10 +18,10 @@ public class Bomb : MonoBehaviour
     {
         //get list of bomb icons
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-        sprites = MapLoader.Instance.icons["bomb"];
+        sprites = GameManager.Instance.icons["bomb"];
 
         //set attributes from parents tankdata
-        TankData pdata = MapLoader.Instance.tanks[parent.name];
+        TankData pdata = GameManager.Instance.tanks[parent.name];
         if (pdata.noUnset())
         {
             this.explosionRadius = (float)pdata.bmbExplosion;

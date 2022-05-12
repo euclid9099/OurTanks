@@ -4,15 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Globalization;
-using UnityEngine.UI;
+using UnityEngine.UI;   
 
-public class MapLoader : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-    private static MapLoader _instance;
+    private static GameManager _instance;
     private int levelid = 0;
     private string[] levels;
     private List<List<string>> curlevel;
     private Dictionary<string, List<GameObject>> teams;
+    private HashSet<string> teamsToProgress;
 
     public string path = ".";//Application.persistentDataPath;
     public string campaign;
@@ -21,7 +22,7 @@ public class MapLoader : MonoBehaviour
     public Dictionary<string, TankData> tanks;
 
     //from this page https://simonleen.medium.com/game-manager-in-unity-part-1-1aafae6670ec, originally for gamemanager
-    public static MapLoader Instance
+    public static GameManager Instance
     {
         get
         {
@@ -39,7 +40,6 @@ public class MapLoader : MonoBehaviour
 
         _instance = this;
         icons = new Dictionary<string, Sprite[]>();
-
         
         string[] parts;
 
@@ -60,7 +60,18 @@ public class MapLoader : MonoBehaviour
             Debug.Log("loaded tanks");
             LoadLevelnames();
             Debug.Log("loaded level names");
-            LoadNext();
+
+            //setup for canvas
+            foreach(Image i in canvas.GetComponentsInChildren<Image>())
+            {
+                Color c = i.color;
+                c.a = 1;
+                i.CrossFadeAlpha(0, 0, true);
+            }
+
+            StartDisplay();
+            Invoke(nameof(LoadNext), 1f * Time.timeScale);
+            Invoke(nameof(StopDisplay), 3f * Time.timeScale);
             Debug.Log("loaded first level");
 
             /**/
@@ -71,46 +82,57 @@ public class MapLoader : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
-    {
-        if (teams.Count <= 1)
-        {
-            LoadNext();
-        }
-    }
-
     //loads the next level based on current level id
     void LoadNext()
     {
         //this will just load the next level and increase the level id
         if(levelid < levels.Length)
         {
-            string name = levels[levelid].Split('\\')[5];
-            name = name.Substring(4, name.Length-8).Replace('_', ' ');
-            Debug.Log(name);
-            canvas.GetComponent<Canvas>().enabled = true;
-            canvas.GetComponentInChildren<Text>().text = name;
             LoadLevel(levels[levelid]);
             levelid++;
+        } else
+        {
+            EmptyLevel();
         }
+    }
+
+    void StartDisplay()
+    {
+        string name = levels[levelid].Split('\\')[5];
+        name = name.Substring(4, name.Length - 8).Replace('_', ' ');
+
+        canvas.GetComponent<Canvas>().enabled = true;
+        canvas.GetComponentInChildren<Text>().text = name;
+        canvas.GetComponentsInChildren<Image>().Where(img => img.name == "NextLevel").ElementAt(0).CrossFadeAlpha(1, 1, true);
+        Time.timeScale = 1f / 64f;
+    }
+
+    void StopDisplay()
+    {
+        canvas.GetComponent<Canvas>().enabled = false;
+        canvas.GetComponentsInChildren<Image>().Where(img => img.name == "NextLevel").ElementAt(0).CrossFadeAlpha(0,0,true);
+
+        Time.timeScale = 1;
+    }
+
+    void WinScreen()
+    {
+        canvas.GetComponent<Canvas>().enabled = true;
+        canvas.GetComponentsInChildren<Image>().Where(img => img.name == "Win").ElementAt(0).CrossFadeAlpha(1,1,true);
+        Time.timeScale = 1f / 64f;
     }
 
     //loads level from filename
     void LoadLevel(string filename)
     {
         //empty level
-        foreach(GameObject o in FindObjectsOfType<GameObject>())
-        {
-            if (!o.tag.Equals("persistent") && !o.tag.Equals("MainCamera"))
-            {
-                Destroy(o);
-            }
-        }
+        EmptyLevel();
 
         //the current level is loaded as list of list of strings
         curlevel = new List<List<string>>();
         teams = new Dictionary<string, List<GameObject>>();
-        
+        teamsToProgress = new HashSet<string>();
+
         StreamReader level = new StreamReader(filename);
 
         //get all lines from file
@@ -191,11 +213,9 @@ public class MapLoader : MonoBehaviour
                             if (name.StartsWith("p"))
                             {
                                 curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
-                                curtank.name = name.Split('-')[0];
                             } else
                             {
                                 curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
-                                curtank.name = name.Split('-')[0];
                             }
 
                             try
@@ -206,7 +226,13 @@ public class MapLoader : MonoBehaviour
                                 team = teams.Count.ToString();
                             }
 
+                            curtank.name = name.Split('-')[0];
                             curtank.GetComponent<Tank>().team = team;
+                            
+                            if (name.StartsWith("p"))
+                            {
+                                teamsToProgress.Add(team);
+                            }
 
                             if (!teams.ContainsKey(team))
                             {
@@ -217,6 +243,17 @@ public class MapLoader : MonoBehaviour
                         }
                         break;
                 }
+            }
+        }
+    }
+
+    void EmptyLevel()
+    {
+        foreach (GameObject o in FindObjectsOfType<GameObject>())
+        {
+            if (!o.tag.Equals("persistent") && !o.tag.Equals("MainCamera"))
+            {
+                Destroy(o);
             }
         }
     }
@@ -323,6 +360,24 @@ public class MapLoader : MonoBehaviour
         if (teams[tank.GetComponent<Tank>().team].Count <= 0)
         {
             teams.Remove(tank.GetComponent<Tank>().team);
+        }
+
+        if (teams.Count == 1 && teamsToProgress.Contains(teams.Keys.ToArray()[0]))
+        {
+            if (levelid == levels.Length)
+            {
+                WinScreen();
+            }
+            else
+            {
+                Debug.Log("Loading next level (" + levelid + ").");
+                StartDisplay();
+                Invoke(nameof(LoadNext), 2f * Time.timeScale);
+                Invoke(nameof(StopDisplay), 3f * Time.timeScale);
+            }
+        } else if (teams.Count <= 1)
+        {
+            Debug.Log("Game Over");
         }
     }
 

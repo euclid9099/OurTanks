@@ -7,7 +7,7 @@ public class Base : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GetComponent<SpriteRenderer>().sprite = MapLoader.PathnameToSprite(MapLoader.Instance.path + "/Assets/Resources/Campaigns/" + MapLoader.Instance.campaign + "/icons/" + MapLoader.Instance.tanks[transform.parent.gameObject.name].tankBase);
+        GetComponent<SpriteRenderer>().sprite = GameManager.PathnameToSprite(GameManager.Instance.path + "/Assets/Resources/Campaigns/" + GameManager.Instance.campaign + "/icons/" + GameManager.Instance.tanks[transform.parent.gameObject.name].tankBase);
     }
 
     // Update is called once per frame
