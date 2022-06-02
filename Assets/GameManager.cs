@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     private int levelid = 0;
     private string[] levels;
     private List<List<string>> curlevel;
+    public int[] levelsize = new int[2];
     private Dictionary<string, List<GameObject>> teams;
     private HashSet<string> teamsToProgress;
 
@@ -101,7 +102,6 @@ public class GameManager : MonoBehaviour
         string name = levels[levelid].Split('\\')[5];
         name = name.Substring(4, name.Length - 8).Replace('_', ' ');
 
-        canvas.GetComponent<Canvas>().enabled = true;
         canvas.GetComponentInChildren<Text>().text = name;
         canvas.GetComponentsInChildren<Image>().Where(img => img.name == "NextLevel").ElementAt(0).CrossFadeAlpha(1, 1, true);
         Time.timeScale = 1f / 64f;
@@ -109,7 +109,7 @@ public class GameManager : MonoBehaviour
 
     void StopDisplay()
     {
-        canvas.GetComponent<Canvas>().enabled = false;
+        canvas.GetComponentInChildren<Text>().text = "";
         canvas.GetComponentsInChildren<Image>().Where(img => img.name == "NextLevel").ElementAt(0).CrossFadeAlpha(0,0,true);
 
         Time.timeScale = 1;
@@ -117,7 +117,6 @@ public class GameManager : MonoBehaviour
 
     void WinScreen()
     {
-        canvas.GetComponent<Canvas>().enabled = true;
         canvas.GetComponentsInChildren<Image>().Where(img => img.name == "Win").ElementAt(0).CrossFadeAlpha(1,1,true);
         Time.timeScale = 1f / 64f;
     }
@@ -153,16 +152,18 @@ public class GameManager : MonoBehaviour
         }
 
         //add borders
-        //get level sizes
-        float size_x = curlevel[0].Count;
-        float size_y = curlevel.Count;
+        //x size = width of level
+        levelsize[0] = curlevel[0].Count;
+
+        //y size = height of level
+        levelsize[1] = curlevel.Count;
 
         //place borders
-        for (int x = -1; x < size_x + 1; x++)
+        for (int x = -1; x < levelsize[0] + 1; x++)
         {
-            for (int y = -1; y < size_y + 1; y++)
+            for (int y = -1; y < levelsize[1] + 1; y++)
             {
-                if ((x == -1) || (x == size_x) || (y == -1) || (y == size_y))
+                if ((x == -1) || (x == levelsize[0]) || (y == -1) || (y == levelsize[1]))
                 {
                     GameObject curwall = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                     curwall.name = "wall";
@@ -173,9 +174,9 @@ public class GameManager : MonoBehaviour
         }
 
         //place rest of level
-        for (int y = 0; y < size_y; y++)
+        for (int y = 0; y < levelsize[1]; y++)
         {
-            for(int x = 0; x < size_x; x++)
+            for(int x = 0; x < levelsize[0]; x++)
             {
                 name = curlevel[y][x];
                 switch (name)
@@ -213,6 +214,11 @@ public class GameManager : MonoBehaviour
                             if (name.StartsWith("p"))
                             {
                                 curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+
+                                if (name.StartsWith("p1"))
+                                {
+                                    Camera.main.GetComponent<CameraScript>().target = curtank;
+                                }
                             } else
                             {
                                 curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
@@ -249,6 +255,8 @@ public class GameManager : MonoBehaviour
 
     void EmptyLevel()
     {
+        levelsize[0] = 0;
+        levelsize[1] = 0;
         foreach (GameObject o in FindObjectsOfType<GameObject>())
         {
             if (!o.tag.Equals("persistent") && !o.tag.Equals("MainCamera"))
@@ -384,6 +392,7 @@ public class GameManager : MonoBehaviour
         } else if (teams.Count <= 1)
         {
             Debug.Log("Game Over");
+            CancelInvoke();
         }
     }
 

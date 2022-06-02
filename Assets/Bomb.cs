@@ -42,10 +42,13 @@ public class Bomb : MonoBehaviour
             foreach (Collider2D hit in hits)
             {
                 //if it's an enemy tank, reduce time to detection
-                if (hit.gameObject.GetComponent<Tank>().team != this.parent.team)
+                if(hit.gameObject.GetComponent<Tank>() != null)
                 {
-                    timer = 1f;
-                    break;
+                    if (hit.gameObject.GetComponent<Tank>().team != this.parent.team)
+                    {
+                        timer = 1f;
+                        break;
+                    }
                 }
             }
         }
