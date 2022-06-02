@@ -13,6 +13,5 @@ interface BombInteraction
 
 interface ProjInteraction
 {
-    void hit();
-    bool bounces();
+    bool hit();
 }

@@ -109,11 +109,8 @@ public class Bomb : MonoBehaviour, ProjInteraction
         Destroy(this.gameObject);
     }
 
-    public void hit() {
+    public bool hit() {
         Explode();
-    }
-
-    public bool bounces() {
-        return false;
+        return true;
     }
 }

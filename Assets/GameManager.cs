@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     private string[] levels;
     private List<List<string>> curlevel;
     public int[] levelsize = new int[2];
-    private Dictionary<string, List<GameObject>> teams;
+    public Dictionary<string, List<GameObject>> teams;
     private HashSet<string> teamsToProgress;
 
     public string path = ".";//Application.persistentDataPath;
@@ -170,6 +170,7 @@ public class GameManager : MonoBehaviour
                     GameObject curwall = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                     curwall.name = "wall";
                     curwall.AddComponent<Solid>();
+                    curwall.AddComponent<ProjBounces>();
                     curwall.GetComponent<SpriteRenderer>().sprite = icons["block"][Random.Range(0, icons["block"].Length)];
                 }
             }
@@ -188,6 +189,7 @@ public class GameManager : MonoBehaviour
                         GameObject curwall = Instantiate(Resources.Load<GameObject>("wall"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                         curwall.name = "wall";
                         curwall.AddComponent<Solid>();
+                        curwall.AddComponent<ProjBounces>();
                         curwall.GetComponent<SpriteRenderer>().sprite = icons["block"][Random.Range(0, icons["block"].Length)];
                         break;
                     //O specifies holes (unbreakable, non-driveable, bullets unaffected)
@@ -196,7 +198,6 @@ public class GameManager : MonoBehaviour
                         curhole.name = "hole";
                         curhole.AddComponent<Solid>();
                         curhole.GetComponent<SpriteRenderer>().sprite = icons["hole"][Random.Range(0, icons["hole"].Length)];
-                        curhole.GetComponent<Solid>().bounceBehaviour = false;
                         break;
                     //# specifies breakable blocks (breakable, non-driveable, bullets bounce off)
                     case "X":
@@ -204,6 +205,7 @@ public class GameManager : MonoBehaviour
                         breakable.name = "weak_block";
                         breakable.AddComponent<Breakable>();
                         breakable.AddComponent<Solid>();
+                        breakable.AddComponent<ProjBounces>();
                         breakable.GetComponent<SpriteRenderer>().sprite = icons["weak_block"][Random.Range(0, icons["weak_block"].Length)];
                         break;
                     default:
@@ -225,7 +227,7 @@ public class GameManager : MonoBehaviour
                             }
                             else
                             {
-                                curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
+                                curtank = Instantiate(Resources.Load<GameObject>("bottank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                             }
 
                             try
@@ -296,7 +298,7 @@ public class GameManager : MonoBehaviour
                 string[] tankparts = parts[1].Split(',');
                 TankData tank = new TankData();
 
-                if (tankparts.Length == 10)
+                if (tankparts.Length == 10 || tankparts.Length == 15)
                 {
                     //path + "/Assets/Resources/Campaigns/" + campaign + "/icons/"
                     //get tank base texture
@@ -330,9 +332,18 @@ public class GameManager : MonoBehaviour
 
                     //get bomb timer
                     tank.bmbTimer = float.Parse(tankparts[9], CultureInfo.InvariantCulture);
+
+                    if (tankparts.Length == 15)
+                    {
+                        tank.botProjFrequncy = float.Parse(tankparts[10], CultureInfo.InvariantCulture);
+                        tank.botCalcRebounds = int.Parse(tankparts[11], CultureInfo.InvariantCulture);
+                        tank.botBmbFrequncy = float.Parse(tankparts[12], CultureInfo.InvariantCulture);
+                        tank.botPrefDistance = float.Parse(tankparts[13], CultureInfo.InvariantCulture);
+                        tank.botPositionFocus = float.Parse(tankparts[14], CultureInfo.InvariantCulture);
+                    }
                 }
 
-                if (tank.noUnset())
+                if (tank.noUnset() || tank.noUnsetBot())
                 {
                     tanks.Add(parts[0], tank);
                 }

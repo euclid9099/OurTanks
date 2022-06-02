@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Solid : MonoBehaviour, MovementInteraction, ProjInteraction
+public class Solid : MonoBehaviour, MovementInteraction
 {
-    public bool bounceBehaviour = true;
     public float movementCost()
     {
         return Mathf.Infinity;
@@ -18,12 +17,5 @@ public class Solid : MonoBehaviour, MovementInteraction, ProjInteraction
     public float moveY(float movy)
     {
         return 0;
-    }
-
-    public void hit() { }//do nothing
-
-    public bool bounces()
-    {
-        return bounceBehaviour;
     }
 }

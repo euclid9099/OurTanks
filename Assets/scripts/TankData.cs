@@ -19,6 +19,12 @@ public class TankData
     public float bmbDetection = -1;
     public float bmbTimer     = -1;
 
+    public float botProjFrequncy = -1;
+    public int botCalcRebounds   = -1;
+    public float botBmbFrequncy  = -1;
+    public float botPrefDistance = -1;
+    public float botPositionFocus= -1;
+
     public TankData() { }
 
     public TankData(string tankBase, string tower, float speed, int projLimit, float projSpeed, int projBounces, int bmbLimit, float bmbExplosion, float bmbDetection, float bmbTimer)
@@ -43,5 +49,10 @@ public class TankData
         return (tankBase != null && tower != null &&
             projLimit != -1 && projSpeed != -1 && projBounces != -1 &&
             bmbLimit != -1 && bmbExplosion != -1 && bmbDetection != -1 && bmbTimer != -1);
+    }
+
+    public bool noUnsetBot()
+    {
+        return (noUnset() && botProjFrequncy != -1 && botCalcRebounds != -1 && botBmbFrequncy != -1 && botPrefDistance != -1 && botPositionFocus != -1);
     }
 }

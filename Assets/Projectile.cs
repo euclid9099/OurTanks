@@ -48,22 +48,18 @@ public class Projectile : MonoBehaviour, ProjInteraction
         Debug.Log(hit.gameObject.name);
         if (hit.gameObject.GetComponent<ProjInteraction>() != null)
         {
-            if (hit.gameObject.GetComponent<ProjInteraction>().bounces())
+            if (hit.gameObject.GetComponent<ProjInteraction>().hit())
+            {
+                this.hit();
+            } else
             {
                 TurnProjectile(hit.GetContact(0).normal);
                 bounceCounter = bounceCounter - 1;
             }
-            else if ((hit.gameObject.GetComponent<ProjInteraction>() is Solid))
-            {
-                Physics2D.IgnoreCollision(hit.collider, this.myCollider);
-                this.rb.velocity = this.transform.right * speed;
-            }
-            else
-            {
-                hit.gameObject.GetComponent<ProjInteraction>().hit();
-                this.hit();
-            }
-
+        } else
+        {
+            Physics2D.IgnoreCollision(hit.collider, this.myCollider);
+            this.rb.velocity = this.transform.right * speed;
         }
 
         if (bounceCounter == 0)
@@ -126,9 +122,10 @@ public class Projectile : MonoBehaviour, ProjInteraction
         return dirAngle;
     }
 
-    public void hit()
+    public bool hit()
     {
         Explode(1);
+        return true;
     }
 
     public bool bounces()

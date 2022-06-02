@@ -15,7 +15,7 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
     public int bombLimit = 2;
 
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         data = GameManager.Instance.tanks[name];
         myCollider = GetComponent<BoxCollider2D>();
@@ -159,8 +159,9 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
         return 0.5f;
     }
 
-    public void hit() {
+    public bool hit() {
         Kill();
+        return true;
     }
 
     public bool bounces() {
