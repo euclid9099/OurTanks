@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Bomb : MonoBehaviour
+public class Bomb : MonoBehaviour, ProjInteraction
 {
     private float explosionRadius = 3;
     private float detectionDistance = 2;
@@ -107,5 +107,13 @@ public class Bomb : MonoBehaviour
         //kill self
         if (parent != null) parent.bombLimit += 1;
         Destroy(this.gameObject);
+    }
+
+    public void hit() {
+        Explode();
+    }
+
+    public bool bounces() {
+        return false;
     }
 }

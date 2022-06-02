@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
+public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction, ProjInteraction
 {
     public string team;
 
@@ -157,5 +157,13 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
     public float movementCost()
     {
         return 0.5f;
+    }
+
+    public void hit() {
+        Kill();
+    }
+
+    public bool bounces() {
+        return false;
     }
 }
