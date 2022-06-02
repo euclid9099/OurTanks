@@ -1,5 +1,5 @@
 #
 ---tanks
 ---tankname:baseicon,towericon,speed,(bullets:)limit,bounces,speed,(bombs:)limit,explosionradius,detectionradius,timer
-p1:player1.png,player1_tower.png,10,5,2,25,2,4,3,1
-p2:player2.png,tower2.png,25,5,2,25,100000,4,3,5
+p1:player1.png,player1_tower.png,10,5,2,25,2,4,3,5
+p2:player2.png,tower2.png,25,5,2,25,2,4,3,5

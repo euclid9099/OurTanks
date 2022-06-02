@@ -4,7 +4,7 @@ using UnityEngine;
 using System; 
 
 //To Do: implement kill Bomb, Tank, Proj with interfaces
-public class Projectile : MonoBehaviour
+public class Projectile : MonoBehaviour, ProjInteraction
 {
     public Tank parent;
 
@@ -41,6 +41,31 @@ public class Projectile : MonoBehaviour
         }
     }
 
+    //gets called when a collision is detected by the Unity Collision system
+    //depending of the object hit, the proj bounces or explodes
+    void OnCollisionEnter2D(Collision2D hit)
+    {
+        Debug.Log(hit.gameObject.name + " - " + bounceCounter);
+        if (hit.gameObject.GetComponent<ProjInteraction>() != null) 
+        {
+            if (hit.gameObject.GetComponent<ProjInteraction>().bounces()) 
+            {
+                TurnProjectile(hit.GetContact(0).normal);
+                bounceCounter = bounceCounter - 1;
+            }
+            else
+            {
+                hit.gameObject.GetComponent<ProjInteraction>().hit();
+                this.hit();
+            }
+            
+        }
+        
+        if(bounceCounter == 0){
+            this.hit();
+        }
+    }
+
     public void SetParameters(int bounces, float velocity, Quaternion direction, Tank parent)
     {
         this.bounceCounter = bounces;
@@ -48,33 +73,8 @@ public class Projectile : MonoBehaviour
         this.transform.rotation = direction;
         this.parent = parent;
     }
-    
-    
-    void OnCollisionEnter2D(Collision2D hit)
-    {
-        Debug.Log(hit.gameObject.name + " - " + bounceCounter);
-        if(hit.gameObject.name.Equals("wall"))
-        {
-            TurnProjectile(hit.GetContact(0).normal);
-            bounceCounter = bounceCounter - 1;
-        }
-        else if(hit.gameObject.GetComponent<Tank>() != null)
-        {
-            Tank tank = hit.gameObject.GetComponent<Tank>();
-            tank.Kill();
-            DestroyProjectile(1.5f);
-        }
-        else if(hit.gameObject.name.Equals("Projectile(Clone)"))
-        {
-            DestroyProjectile(1);
-        }
-        
-        if(bounceCounter == 0){
-            DestroyProjectile(1);
-        }
-    }
 
-    public void DestroyProjectile(float explosionRadius) 
+    protected void Explode(float explosionRadius) 
     {
         //Disable Projectile (=invisible), start explosion, kill proj after explosion
         GameObject explosion = Instantiate((GameObject)Resources.Load("Explosion"), this.transform.position, this.transform.rotation);
@@ -115,5 +115,13 @@ public class Projectile : MonoBehaviour
         }
 
         return dirAngle;
+    }
+
+    public void hit () {
+        Explode(1);
+    }
+
+    public bool bounces() {
+        return false;
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Solid : MonoBehaviour, MovementInteraction
+public class Solid : MonoBehaviour, MovementInteraction, ProjInteraction
 {
     public float movementCost()
     {
@@ -17,5 +17,12 @@ public class Solid : MonoBehaviour, MovementInteraction
     public float moveY(float movy)
     {
         return 0;
+    }
+
+    public void hit(){}//do nothing
+
+    public bool bounces()
+    {
+        return true;
     }
 }
