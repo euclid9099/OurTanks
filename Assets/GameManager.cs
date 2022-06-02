@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Globalization;
-using UnityEngine.UI;   
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
 
         _instance = this;
         icons = new Dictionary<string, Sprite[]>();
-        
+
         string[] parts;
 
         //load default icons - no errors are allowed
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("loaded level names");
 
             //setup for canvas
-            foreach(Image i in canvas.GetComponentsInChildren<Image>())
+            foreach (Image i in canvas.GetComponentsInChildren<Image>())
             {
                 Color c = i.color;
                 c.a = 1;
@@ -77,7 +77,8 @@ public class GameManager : MonoBehaviour
 
             /**/
             camp.Close();
-        } catch(IOException e)
+        }
+        catch (IOException e)
         {
             Debug.LogError(e);
         }
@@ -87,11 +88,12 @@ public class GameManager : MonoBehaviour
     void LoadNext()
     {
         //this will just load the next level and increase the level id
-        if(levelid < levels.Length)
+        if (levelid < levels.Length)
         {
             LoadLevel(levels[levelid]);
             levelid++;
-        } else
+        }
+        else
         {
             EmptyLevel();
         }
@@ -110,14 +112,14 @@ public class GameManager : MonoBehaviour
     void StopDisplay()
     {
         canvas.GetComponentInChildren<Text>().text = "";
-        canvas.GetComponentsInChildren<Image>().Where(img => img.name == "NextLevel").ElementAt(0).CrossFadeAlpha(0,0,true);
+        canvas.GetComponentsInChildren<Image>().Where(img => img.name == "NextLevel").ElementAt(0).CrossFadeAlpha(0, 0, true);
 
         Time.timeScale = 1;
     }
 
     void WinScreen()
     {
-        canvas.GetComponentsInChildren<Image>().Where(img => img.name == "Win").ElementAt(0).CrossFadeAlpha(1,1,true);
+        canvas.GetComponentsInChildren<Image>().Where(img => img.name == "Win").ElementAt(0).CrossFadeAlpha(1, 1, true);
         Time.timeScale = 1f / 64f;
     }
 
@@ -143,9 +145,9 @@ public class GameManager : MonoBehaviour
         level.Close();
 
         //check that all lines have the same size
-        for(int i = 1; i < curlevel.Count; i++)
+        for (int i = 1; i < curlevel.Count; i++)
         {
-            if (curlevel[i].Count != curlevel[i-1].Count)
+            if (curlevel[i].Count != curlevel[i - 1].Count)
             {
                 throw new InvalidDataException("row sizes don't match");
             }
@@ -176,7 +178,7 @@ public class GameManager : MonoBehaviour
         //place rest of level
         for (int y = 0; y < levelsize[1]; y++)
         {
-            for(int x = 0; x < levelsize[0]; x++)
+            for (int x = 0; x < levelsize[0]; x++)
             {
                 name = curlevel[y][x];
                 switch (name)
@@ -194,6 +196,7 @@ public class GameManager : MonoBehaviour
                         curhole.name = "hole";
                         curhole.AddComponent<Solid>();
                         curhole.GetComponent<SpriteRenderer>().sprite = icons["hole"][Random.Range(0, icons["hole"].Length)];
+                        curhole.GetComponent<Solid>().bounceBehaviour = false;
                         break;
                     //# specifies breakable blocks (breakable, non-driveable, bullets bounce off)
                     case "X":
@@ -219,7 +222,8 @@ public class GameManager : MonoBehaviour
                                 {
                                     Camera.main.GetComponent<CameraScript>().target = curtank;
                                 }
-                            } else
+                            }
+                            else
                             {
                                 curtank = Instantiate(Resources.Load<GameObject>("playertank"), new Vector2(x, -y), Quaternion.Euler(0, 0, 0));
                             }
@@ -227,14 +231,15 @@ public class GameManager : MonoBehaviour
                             try
                             {
                                 team = name.Split('-')[1];
-                            } catch (System.IndexOutOfRangeException)
+                            }
+                            catch (System.IndexOutOfRangeException)
                             {
                                 team = teams.Count.ToString();
                             }
 
                             curtank.name = name.Split('-')[0];
                             curtank.GetComponent<Tank>().team = team;
-                            
+
                             if (name.StartsWith("p"))
                             {
                                 teamsToProgress.Add(team);
@@ -279,7 +284,7 @@ public class GameManager : MonoBehaviour
 
         tanks = new Dictionary<string, TankData>();
 
-        
+
         //create tankdata from file, by name
         string[] parts;
         foreach (string part in data.Split('\n'))
@@ -296,7 +301,7 @@ public class GameManager : MonoBehaviour
                     //path + "/Assets/Resources/Campaigns/" + campaign + "/icons/"
                     //get tank base texture
                     tank.tankBase = tankparts[0].Replace("\r", "");
-                    
+
                     //get tank tower texture
                     tank.tower = tankparts[1].Replace("\r", "");
 
@@ -349,7 +354,7 @@ public class GameManager : MonoBehaviour
                     //overwrite old value asignment with new assignment
                     icons.Remove(parts[0]);
                     List<Sprite> sprites = new List<Sprite>();
-                    foreach(string filename in parts[1].Split(','))
+                    foreach (string filename in parts[1].Split(','))
                     {
                         Texture2D texture = new Texture2D(100, 100);
                         texture.LoadImage(File.ReadAllBytes(path + "/Assets/Resources/Campaigns/" + (allowNewKeys ? "default" : campaign) + "/icons/" + filename.Replace("\r", "")));
@@ -383,7 +388,8 @@ public class GameManager : MonoBehaviour
                 Invoke(nameof(LoadNext), 2f * Time.timeScale);
                 Invoke(nameof(StopDisplay), 3f * Time.timeScale);
             }
-        } else if (teams.Count <= 1)
+        }
+        else if (teams.Count <= 1)
         {
             Debug.Log("Game Over");
             CancelInvoke();

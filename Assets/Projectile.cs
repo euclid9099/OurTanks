@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System; 
+using System;
 
 //To Do: implement kill Bomb, Tank, Proj with interfaces
 public class Projectile : MonoBehaviour, ProjInteraction
@@ -14,7 +14,7 @@ public class Projectile : MonoBehaviour, ProjInteraction
     private int bounceCounter;
     private float speed;
     public float traveledDistance;
-    
+
 
     // Start is called before the first frame update
     void Start()
@@ -35,7 +35,7 @@ public class Projectile : MonoBehaviour, ProjInteraction
     void FixedUpdate()
     {
         traveledDistance += speed * Time.fixedDeltaTime;
-        if(bounceCounter < parent.data.projBounces)
+        if (bounceCounter < parent.data.projBounces)
         {
             Physics2D.IgnoreCollision(this.myCollider, parent.myCollider, false);
         }
@@ -45,23 +45,29 @@ public class Projectile : MonoBehaviour, ProjInteraction
     //depending of the object hit, the proj bounces or explodes
     void OnCollisionEnter2D(Collision2D hit)
     {
-        Debug.Log(hit.gameObject.name + " - " + bounceCounter);
-        if (hit.gameObject.GetComponent<ProjInteraction>() != null) 
+        Debug.Log(hit.gameObject.name);
+        if (hit.gameObject.GetComponent<ProjInteraction>() != null)
         {
-            if (hit.gameObject.GetComponent<ProjInteraction>().bounces()) 
+            if (hit.gameObject.GetComponent<ProjInteraction>().bounces())
             {
                 TurnProjectile(hit.GetContact(0).normal);
                 bounceCounter = bounceCounter - 1;
+            }
+            else if ((hit.gameObject.GetComponent<ProjInteraction>() is Solid))
+            {
+                Physics2D.IgnoreCollision(hit.collider, this.myCollider, true);
+                this.rb.velocity = this.transform.right * speed;
             }
             else
             {
                 hit.gameObject.GetComponent<ProjInteraction>().hit();
                 this.hit();
             }
-            
+
         }
-        
-        if(bounceCounter == 0){
+
+        if (bounceCounter == 0)
+        {
             this.hit();
         }
     }
@@ -74,25 +80,25 @@ public class Projectile : MonoBehaviour, ProjInteraction
         this.parent = parent;
     }
 
-    protected void Explode(float explosionRadius) 
+    protected void Explode(float explosionRadius)
     {
         //Disable Projectile (=invisible), start explosion, kill proj after explosion
         GameObject explosion = Instantiate((GameObject)Resources.Load("Explosion"), this.transform.position, this.transform.rotation);
         ParticleSystem.MainModule main = explosion.GetComponent<ParticleSystem>().main;
-        main.startSize = new ParticleSystem.MinMaxCurve(explosionRadius/4,explosionRadius/2);
+        main.startSize = new ParticleSystem.MinMaxCurve(explosionRadius / 4, explosionRadius / 2);
 
         ParticleSystem.EmissionModule em = explosion.GetComponent<ParticleSystem>().emission;
-        em.SetBurst(0, new ParticleSystem.Burst(0,new ParticleSystem.MinMaxCurve((int)(20 * explosionRadius * explosionRadius))));
+        em.SetBurst(0, new ParticleSystem.Burst(0, new ParticleSystem.MinMaxCurve((int)(20 * explosionRadius * explosionRadius))));
 
         ParticleSystem.ShapeModule sh = explosion.GetComponent<ParticleSystem>().shape;
         sh.radius = explosionRadius;
-        
+
         this.gameObject.SetActive(false);
         this.rb.velocity = this.transform.right * 0;
         Destroy(gameObject, 0.5f);
     }
 
-    public void TurnProjectile (Vector2 mirrorAxis)
+    public void TurnProjectile(Vector2 mirrorAxis)
     {
         //mirror the direction Vector over the normal Vector of the obsticle
         Vector2 projDir = Vector2.Reflect(this.transform.right, mirrorAxis);
@@ -101,8 +107,11 @@ public class Projectile : MonoBehaviour, ProjInteraction
         float dirAngle = CalculateAngleFromVector2(projDir);
 
         //Set the angle of the new Direction and restore speed
-        this.transform.rotation = Quaternion.Euler(0,0, dirAngle);
+        this.transform.rotation = Quaternion.Euler(0, 0, dirAngle);
         this.rb.velocity = this.transform.right * speed;
+
+        // move the projectile away from the hit object so the gap between blocks leads to death
+        transform.Translate(Vector2.right * speed * Time.fixedDeltaTime);
     }
 
     private float CalculateAngleFromVector2(Vector2 direction)
@@ -117,11 +126,13 @@ public class Projectile : MonoBehaviour, ProjInteraction
         return dirAngle;
     }
 
-    public void hit () {
+    public void hit()
+    {
         Explode(1);
     }
 
-    public bool bounces() {
+    public bool bounces()
+    {
         return false;
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Solid : MonoBehaviour, MovementInteraction, ProjInteraction
 {
+    public bool bounceBehaviour = true;
     public float movementCost()
     {
         return Mathf.Infinity;
@@ -19,10 +20,10 @@ public class Solid : MonoBehaviour, MovementInteraction, ProjInteraction
         return 0;
     }
 
-    public void hit(){}//do nothing
+    public void hit() { }//do nothing
 
     public bool bounces()
     {
-        return true;
+        return bounceBehaviour;
     }
 }
