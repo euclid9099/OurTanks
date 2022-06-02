@@ -55,7 +55,7 @@ public class Projectile : MonoBehaviour, ProjInteraction
             }
             else if ((hit.gameObject.GetComponent<ProjInteraction>() is Solid))
             {
-                Physics2D.IgnoreCollision(hit.collider, this.myCollider, true);
+                Physics2D.IgnoreCollision(hit.collider, this.myCollider);
                 this.rb.velocity = this.transform.right * speed;
             }
             else
