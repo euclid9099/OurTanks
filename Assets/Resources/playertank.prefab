@@ -95,6 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d64da54a97defce448b3870a4ef551b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parent: {fileID: 4670655289380560450}
 --- !u!1 &789982506601364417
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,4 +264,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 0
+  myCollider: {fileID: 0}
   bombLimit: 2

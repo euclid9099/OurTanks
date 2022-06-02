@@ -58,7 +58,6 @@ public class CameraScript : MonoBehaviour
             }
 
             //move object on screen
-            Debug.Log(targetX + " | " + targetY);
             this.transform.position = new Vector3(targetX, targetY, -10);
         }
     }

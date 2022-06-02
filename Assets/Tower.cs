@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    Tank parent;
+    public Tank parent;
     // Start is called before the first frame update
     void Start()
     {
