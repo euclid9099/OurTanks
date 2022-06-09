@@ -8,7 +8,7 @@ public class BotTank : Tank
     private Tank enemy;
     private float timelastchanged = 0;
     private float maxtimelastchanged = 15;
-    private Vector2 currentdirection = Vector2.right;
+    private Vector2 targetPosition = Vector2.zero;
 
     private float timelastshot = 0;
 
@@ -52,13 +52,18 @@ public class BotTank : Tank
         //very simple movement, just move directly to target
         if (enemy != null)
         {
-            if((enemy.transform.position - this.transform.position).sqrMagnitude > data.botPrefDistance * data.botPrefDistance)
+            if (targetPosition == Vector2.zero || (targetPosition - (Vector2)this.transform.position).sqrMagnitude < 0.25)
+            {
+                targetPosition = Pathfinder.FindPath(this.transform.position, enemy.transform.position);
+            }
+            return targetPosition - (Vector2)this.transform.position;
+            /*if((enemy.transform.position - this.transform.position).sqrMagnitude > data.botPrefDistance * data.botPrefDistance)
             {
                 return enemy.transform.position - this.transform.position;
             } else
             {
                 return this.transform.position - enemy.transform.position;
-            }
+            }/**/
         } 
         else
         {

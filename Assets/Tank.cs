@@ -156,7 +156,7 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
 
     public float movementCost()
     {
-        return 0.5f;
+        return 0;
     }
 
     public bool hit() {
