@@ -33,7 +33,6 @@ public class Pathfinder
                     curnode = openNodes[i];
                 }
             }
-            Debug.Log(curnode.ToString());
 
             if (curnode.obstructed)
             {
@@ -43,11 +42,16 @@ public class Pathfinder
 
                 if (curnode.position.x == endPos.x && curnode.position.y == endPos.y)
                 {
+                    Vector2 lastposition = curnode.position;
                     while (curnode.parent.parent != null)
                     {
+                        if(Vector2.Angle(curnode.position - curnode.parent.position, curnode.parent.position - curnode.parent.parent.position) > 15)
+                        {
+                            lastposition = curnode.parent.position;
+                        }
                         curnode = curnode.parent;
                     }
-                    return curnode.position;
+                    return lastposition;
                 } else
                 {
                     bool north, east, south, west;

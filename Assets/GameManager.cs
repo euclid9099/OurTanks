@@ -338,7 +338,7 @@ public class GameManager : MonoBehaviour
                         tank.botProjFrequncy = float.Parse(tankparts[10], CultureInfo.InvariantCulture);
                         tank.botCalcRebounds = int.Parse(tankparts[11], CultureInfo.InvariantCulture);
                         tank.botBmbFrequncy = float.Parse(tankparts[12], CultureInfo.InvariantCulture);
-                        tank.botPrefDistance = float.Parse(tankparts[13], CultureInfo.InvariantCulture);
+                        tank.botAggression = float.Parse(tankparts[13], CultureInfo.InvariantCulture);
                         tank.botPositionFocus = float.Parse(tankparts[14], CultureInfo.InvariantCulture);
                     }
                 }

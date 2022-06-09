@@ -7,7 +7,6 @@ public class BotTank : Tank
 {
     private Tank enemy;
     private float timelastchanged = 0;
-    private float maxtimelastchanged = 15;
     private Vector2 targetPosition = Vector2.zero;
 
     private float timelastshot = 0;
@@ -16,12 +15,14 @@ public class BotTank : Tank
     {
         base.Start();
         timelastshot = (Mathf.Pow(Random.Range(0f, 1f), 2) * (Random.Range(0, 2) == 1 ? 1 : -1) * data.botProjFrequncy / 2 + data.botProjFrequncy);
+        timelastchanged = Mathf.Pow(Random.Range(0f, 1f), 2) * (Random.Range(0, 2) == 1 ? 1 : -1) * data.botPositionFocus / 2 + data.botPositionFocus;
+        if(data.speed != 0 && data.botAggression != 0) InvokeRepeating("FindPath", 0f, 0.5f);
     }
 
     public override Vector3 GetTarget()
     {
-        timelastchanged += Time.deltaTime;
-        if (enemy == null || Mathf.Pow(timelastchanged / maxtimelastchanged, 4) > Random.value)
+        timelastchanged -= Time.deltaTime;
+        if (enemy == null || timelastchanged < 0)
         {
             timelastchanged = 0;
             string[] opposingTeams = GameManager.Instance.teams.Keys.Where(e => !e.Equals(team)).ToArray();
@@ -38,7 +39,6 @@ public class BotTank : Tank
         if (data.botProjFrequncy != 0 && timelastshot < 0)
         {
             timelastshot = (Mathf.Pow(Random.Range(0f, 1f), 2) * (Random.Range(0,2) == 1 ? 1 : -1) * data.botProjFrequncy / 2 + data.botProjFrequncy);
-            Debug.Log(timelastshot);
             return Physics2D.LinecastAll(enemy.transform.position, this.transform.position).Where(e => e.collider.gameObject.GetComponent<ProjInteraction>() != null).Count() == 2;
         } else
         {
@@ -52,23 +52,26 @@ public class BotTank : Tank
         //very simple movement, just move directly to target
         if (enemy != null)
         {
-            if (targetPosition == Vector2.zero || (targetPosition - (Vector2)this.transform.position).sqrMagnitude < 0.25)
+            Vector2 movement = data.botAggression == 0 ? Vector2.zero : targetPosition - (Vector2)this.transform.position;
+            if (data.botAggression != 0 && movement.sqrMagnitude < data.speed * data.speed * Time.deltaTime * Time.deltaTime)
             {
-                targetPosition = Pathfinder.FindPath(this.transform.position, enemy.transform.position);
+                FindPath();
             }
-            return targetPosition - (Vector2)this.transform.position;
-            /*if((enemy.transform.position - this.transform.position).sqrMagnitude > data.botPrefDistance * data.botPrefDistance)
-            {
-                return enemy.transform.position - this.transform.position;
-            } else
-            {
-                return this.transform.position - enemy.transform.position;
-            }/**/
+            return (new Vector2((Mathf.PerlinNoise(Time.time, 0) - 0.5f) * 2 * data.speed, (Mathf.PerlinNoise(0, Time.time) - 0.5f) * 2 * data.speed)) * (Mathf.Abs(data.botAggression) - 1) + movement * data.speed * data.botAggression;
         } 
         else
         {
             return Vector2.zero;
         }
+    }
+
+    private void FindPath()
+    {
+        if (enemy != null)
+        {
+            targetPosition = Pathfinder.FindPath(this.transform.position, enemy.transform.position);
+        }
+        else targetPosition = Vector2.zero;
     }
 
     protected override bool PlaceBomb()
