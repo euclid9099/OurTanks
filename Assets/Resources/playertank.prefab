@@ -92,7 +92,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 789982506051776822}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d64da54a97defce448b3870a4ef551b1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2d3a65c55a36bdf439d1316bc38639f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parent: {fileID: 4670655289380560450}
@@ -264,5 +264,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 0
-  myCollider: {fileID: 0}
+  myCollider: {fileID: 2760951107198340208}
   bombLimit: 2

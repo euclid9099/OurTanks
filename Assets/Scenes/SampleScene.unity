@@ -425,13 +425,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 630652355}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c402afae82ef04145b28e0c6b6d160f1, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a40d2839f7398a4793bccc9619bf5eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   levelsize: 0000000000000000
   path: .
   campaign: classic
-  canvas: {fileID: 102687795}
+  canvas: {fileID: 0}
 --- !u!4 &630652357
 Transform:
   m_ObjectHideFlags: 0

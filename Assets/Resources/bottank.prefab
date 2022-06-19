@@ -73,7 +73,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   team: 
-  myCollider: {fileID: 0}
+  myCollider: {fileID: 819228040446345437}
   bombLimit: 2
 --- !u!1 &2880105905651875227
 GameObject:
@@ -167,7 +167,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2880105905651875227}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d64da54a97defce448b3870a4ef551b1, type: 3}
+  m_Script: {fileID: 11500000, guid: 2d3a65c55a36bdf439d1316bc38639f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parent: {fileID: 6662794413095182561}
