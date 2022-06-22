@@ -120,6 +120,10 @@ public class GameManager : MonoBehaviour
     void WinScreen()
     {
         canvas.GetComponentsInChildren<Image>().Where(img => img.name == "Win").ElementAt(0).CrossFadeAlpha(1, 1, true);
+        canvas.GetComponentInChildren<Button>().gameObject.SetActive(true);
+
+        EmptyLevel();
+        
         Time.timeScale = 1f / 64f;
     }
 
