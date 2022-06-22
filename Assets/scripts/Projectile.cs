@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 
 //To Do: implement kill Bomb, Tank, Proj with interfaces
-public class Projectile : MonoBehaviour, ProjInteraction
+public class Projectile : MonoBehaviour, ProjInteraction, Hazard
 {
     public Tank parent;
 
@@ -27,12 +27,12 @@ public class Projectile : MonoBehaviour, ProjInteraction
         projTrail.Play();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDestroy()
     {
+        if (parent != null && parent.GetComponentInChildren<Tower>() != null) parent.GetComponentInChildren<Tower>().activeBullets--;
     }
 
-    void FixedUpdate()
+void FixedUpdate()
     {
         traveledDistance += speed * Time.fixedDeltaTime;
         if (bounceCounter < parent.data.projBounces)
@@ -131,5 +131,15 @@ public class Projectile : MonoBehaviour, ProjInteraction
     public bool bounces()
     {
         return false;
+    }
+
+    public Vector2 avoidingPath(Vector2 position)
+    {
+        float distance = ((Vector2)this.transform.position - position).magnitude;
+        if (distance < 3)
+        {
+            return (position - (Vector2)this.transform.position).normalized * (1 / distance);
+        }
+        return Vector2.zero;
     }
 }

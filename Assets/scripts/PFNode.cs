@@ -18,7 +18,7 @@ public class PFNode : System.IComparable<PFNode>
     public PFNode(Vector2 position)
     {
         this.position = position;
-        this.obstructed = Physics2D.OverlapPointAll(position).Where(e => e.GetComponent<MovementInteraction>().movementCost() > 0).Count() > 0;
+        this.obstructed = Physics2D.OverlapPointAll(position).Where(e => e.GetComponent<MovementInteraction>() != null && e.GetComponent<MovementInteraction>().movementCost() > 0).Count() > 0;
     }
 
     public int CompareTo(PFNode b)

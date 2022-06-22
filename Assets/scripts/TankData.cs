@@ -22,7 +22,9 @@ public class TankData
     public float botProjFrequncy = -1;
     public int botCalcRebounds   = -1;
     public float botBmbFrequncy  = -1;
-    public float botAggression   = -10;
+    public float botPathfinding = -10;
+    public float botRandomness = -10;
+    public float botFear = -10;
     public float botPositionFocus= -1;
 
     public TankData() { }
@@ -53,6 +55,6 @@ public class TankData
 
     public bool noUnsetBot()
     {
-        return (noUnset() && botProjFrequncy != -1 && botCalcRebounds != -1 && botBmbFrequncy != -1 && botAggression != -10 && botPositionFocus != -1);
+        return (noUnset() && botProjFrequncy != -1 && botCalcRebounds != -1 && botBmbFrequncy != -1 && botPathfinding != -10 && botRandomness != -10 && botPositionFocus != -10 && botPositionFocus != -1);
     }
 }

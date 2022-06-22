@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction, ProjInteraction
+public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction, ProjInteraction, Hazard
 {
     public string team;
 
@@ -113,13 +113,16 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
 
     public void Kill()
     {
-        GameObject d = Resources.Load<GameObject>("Death");
-        d.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.icons["death"][UnityEngine.Random.Range(0, GameManager.Instance.icons["death"].Length)];
-        Instantiate(d, this.transform.position, Quaternion.Euler(0,0,0));
+        if (GameManager.Instance.godMode == false || !GameManager.Instance.teamsToProgress.Contains(this.team))
+        {
+            GameObject d = Resources.Load<GameObject>("Death");
+            d.GetComponent<SpriteRenderer>().sprite = GameManager.Instance.icons["death"][UnityEngine.Random.Range(0, GameManager.Instance.icons["death"].Length)];
+            Instantiate(d, this.transform.position, Quaternion.Euler(0, 0, 0));
 
-        GameManager.Instance.TankDeath(this.gameObject);
+            GameManager.Instance.TankDeath(this.gameObject);
 
-        Destroy(this.gameObject);
+            Destroy(this.gameObject);
+        }
     }
 
     public void SetTankData(TankData data)
@@ -166,5 +169,15 @@ public abstract class Tank : MonoBehaviour, BombInteraction, MovementInteraction
 
     public bool bounces() {
         return false;
+    }
+
+    public Vector2 avoidingPath(Vector2 position)
+    {
+        float distance = ((Vector2)this.transform.position - position).magnitude;
+        if (distance < 5 && distance > 1/64)
+        {
+            return (position - (Vector2)this.transform.position).normalized * (1f / distance);
+        }
+        return Vector2.zero;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Bomb : MonoBehaviour, ProjInteraction
+public class Bomb : MonoBehaviour, ProjInteraction, Hazard
 {
     private float explosionRadius = 3;
     private float detectionDistance = 2;
@@ -112,5 +112,21 @@ public class Bomb : MonoBehaviour, ProjInteraction
     public bool hit() {
         Explode();
         return true;
+    }
+
+    public Vector2 avoidingPath(Vector2 position)
+    {
+        float distance = ((Vector2)this.transform.position - position).magnitude;
+        if (distance < this.explosionRadius * 1.25f && distance > 1 / 64)
+        {
+            if (timer < 1)
+            {
+                return (position - (Vector2)this.transform.position).normalized * (3 / distance);
+            } else
+            {
+                return (position - (Vector2)this.transform.position).normalized * (1 / distance);
+            }
+        }
+        return Vector2.zero;
     }
 }

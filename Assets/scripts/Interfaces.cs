@@ -1,3 +1,5 @@
+using UnityEngine;
+
 //Interface for everything which interacts with tank movement
 interface MovementInteraction
 {
@@ -14,4 +16,9 @@ interface BombInteraction
 interface ProjInteraction
 {
     bool hit();
+}
+
+interface Hazard
+{
+    Vector2 avoidingPath(Vector2 position);
 }

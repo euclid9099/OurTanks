@@ -5,9 +5,11 @@ using UnityEngine;
 public class Tower : MonoBehaviour
 {
     public Tank parent;
+    public int activeBullets;
     // Start is called before the first frame update
     void Start()
     {
+        activeBullets = 0;
         GetComponent<SpriteRenderer>().sprite = GameManager.PathnameToSprite(GameManager.Instance.path + "/Assets/Resources/Campaigns/" + GameManager.Instance.campaign + "/icons/" + GameManager.Instance.tanks[transform.parent.gameObject.name].tower);
     }
 
@@ -19,9 +21,10 @@ public class Tower : MonoBehaviour
 
         //rotate the tower towards the cursor        
         this.transform.rotation = Quaternion.Euler(0,0, (float)(180 * Mathf.Atan2(cursor.y - transform.position.y, cursor.x - transform.position.x) / Mathf.PI));
-        if(parent.Shoot())
+        if(parent.Shoot() && parent.data.projLimit > activeBullets)
         {
             ShootProjectile();
+            activeBullets++;
         }
         
     }

@@ -431,7 +431,7 @@ MonoBehaviour:
   levelsize: 0000000000000000
   path: .
   campaign: classic
-  canvas: {fileID: 0}
+  canvas: {fileID: 102687795}
 --- !u!4 &630652357
 Transform:
   m_ObjectHideFlags: 0
