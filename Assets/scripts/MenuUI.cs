@@ -7,8 +7,9 @@ public class MenuUI : MonoBehaviour
 {
     public GameObject pauseMenu;
 
-    [SerializeField]
-    public static bool GameIsPaused = false;
+    void Start () {
+        Debug.Log("Created Menu script");
+    }
 
     public void PlayGame () 
     {
@@ -31,7 +32,7 @@ public class MenuUI : MonoBehaviour
         // Scene builIndex = 1: Game Scene
         if (SceneManager.GetActiveScene().buildIndex == 1 && Input.GetKeyDown(KeyCode.Escape)) 
         {
-            if(GameIsPaused) 
+            if(GameManager.Instance.getGameIsPaused()) 
             {
                 Resume();
             } else 
@@ -41,17 +42,17 @@ public class MenuUI : MonoBehaviour
         }
     }
 
-    void Resume () 
+    public void Resume () 
     {
         pauseMenu.SetActive(false);
         Time.timeScale = 1f;
-        MenuUI.GameIsPaused = false; 
+        GameManager.Instance.toggleGameIsPaused(); 
     }
 
     void Pause () 
     {
         pauseMenu.SetActive(true);
         Time.timeScale = 0f;
-        MenuUI.GameIsPaused = true; 
+        GameManager.Instance.toggleGameIsPaused(); 
     }
 }
