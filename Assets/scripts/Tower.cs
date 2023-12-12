@@ -16,6 +16,7 @@ public class Tower : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (GameManager.Instance.getGameIsPaused()) {return;}
         //get Mousecursor (in px) and convert it in vector of game units
         Vector3 cursor = parent.GetTarget();
 

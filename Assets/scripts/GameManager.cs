@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
+    public bool GameIsPaused;
     private int levelid = 0;
     private string[] levels;
     private List<List<string>> curlevel;
@@ -22,6 +23,10 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, Sprite[]> icons;
     public Dictionary<string, TankData> tanks;
     public bool godMode = false;
+
+    public bool getGameIsPaused () { return GameIsPaused; }
+
+    public void toggleGameIsPaused () { GameIsPaused = !GameIsPaused; } 
 
     //from this page https://simonleen.medium.com/game-manager-in-unity-part-1-1aafae6670ec, originally for gamemanager
     public static GameManager Instance
@@ -39,6 +44,8 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         Debug.Log("Maploader awoken");
+
+        GameIsPaused = false;
 
         _instance = this;
         icons = new Dictionary<string, Sprite[]>();
@@ -121,7 +128,24 @@ public class GameManager : MonoBehaviour
     void WinScreen()
     {
         canvas.GetComponentsInChildren<Image>().Where(img => img.name == "Win").ElementAt(0).CrossFadeAlpha(1, 1, true);
-        Time.timeScale = 1f / 64f;
+        canvas.GetComponentInChildren<Button>().gameObject.SetActive(true);
+
+        toggleGameIsPaused();
+
+        EmptyLevel();
+        
+        Time.timeScale = 0f;
+    }
+
+    void LoseScreen()
+    {
+        canvas.GetComponentsInChildren<Image>().Where(img => img.name == "Lose").ElementAt(0).CrossFadeAlpha(1, 1, true);
+
+        toggleGameIsPaused();
+
+        EmptyLevel();
+        
+        Time.timeScale = 0f;
     }
 
     //loads level from filename
@@ -406,6 +430,7 @@ public class GameManager : MonoBehaviour
         else if (teams.Count <= 1)
         {
             Debug.Log("Game Over");
+            LoseScreen();
             CancelInvoke();
         }
     }
